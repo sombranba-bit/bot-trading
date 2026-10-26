@@ -69,13 +69,13 @@ def main() -> None:
                 symbol=symbol, notional=NOTIONAL, side=OrderSide.BUY, time_in_force=tif))
             log_trade(symbol, "COMPRA", n)
             acciones.append(f"COMPRA {symbol}")
-            telegram(f"🟢 COMPRA {symbol} · {n}/3 señales (simulación)")
+            telegram(f"🟢 <b>COMPRA</b> {symbol}\n🎯 {n}/3 señales · <i>simulación</i>")
             print("COMPRA", symbol, n)
         elif not want and is_in:
             trading.close_position(key)
             log_trade(symbol, "VENTA", n)
             acciones.append(f"VENTA {symbol}")
-            telegram(f"🔴 VENTA {symbol} · {n}/3 señales (simulación)")
+            telegram(f"🔴 <b>VENTA</b> {symbol}\n🎯 {n}/3 señales · <i>simulación</i>")
             print("VENTA", symbol, n)
 
     save_status(market_open, acciones)

@@ -6,6 +6,7 @@ import csv
 import json
 import os
 from datetime import date, timedelta
+from html import escape
 
 import pandas as pd
 import yfinance as yf
@@ -17,6 +18,14 @@ from page import render
 from signals import votes
 
 ALPACA_TO_TICKER = {v.replace("/", ""): k for k, v in CRYPTO_ALPACA.items()}  # p. ej. BTCUSD -> BTC-USD
+SECTOR_ICON = {"Technology": "💻", "Financial Services": "🏦", "Healthcare": "💊", "Consumer Defensive": "🛒",
+               "Consumer Cyclical": "🛍️", "Energy": "⛽", "Communication Services": "📡", "Industrials": "🏭",
+               "Utilities": "💡", "Real Estate": "🏢", "Basic Materials": "🧱"}
+
+
+def pick_line(p):
+    icon = "₿" if p["ticker"] in CRYPTO else SECTOR_ICON.get(p["info"]["sector"], "📦")  # icono por sector
+    return f'{icon} <b>{escape(p["ticker"])}</b> · {escape(p["info"]["name"])} · {p["votos"]}/3'
 
 EVAL_DAYS = 90  # cada pronóstico se evalúa 90 días después
 TICKERS = UNIVERSE + CRYPTO
@@ -116,11 +125,17 @@ def main() -> None:
     eval_txt = " · ".join(partes) or "Sin pronósticos de más de 90 días todavía."
 
     # 4. Salida: texto para Telegram y página HTML
-    text = (f"Informe {today}\n"
-            f"Simulación: {sim_ret:+.1%} desde {start['fecha']}\n"
-            f"Benchmark VWCE: {bench_ret:+.1%}\n"
-            f"Pronósticos hoy: {', '.join(p['ticker'] for p in picks) or 'ninguno'}\n"
-            f"{eval_txt}")
+    text = "\n".join([
+        f"📊 <b>Informe diario · {today}</b>", "",
+        f"💼 <b>Simulación</b>  {sim_ret:+.1%} desde {start['fecha']}",
+        f"📈 <b>Benchmark VWCE</b>  {bench_ret:+.1%}", "",
+        f"🎯 <b>Pronósticos de hoy</b> ({len(picks)})",
+        *[pick_line(p) for p in picks[:12]],
+        *([f"… y {len(picks) - 12} más"] if len(picks) > 12 else []),
+        *([] if picks else ["Ninguno hoy"]), "",
+        f"🧪 <b>Evaluación</b>", escape(eval_txt), "",
+        '🔗 <a href="https://sombranba-bit.github.io/bot-trading/">Ver el panel completo</a>',
+    ])
     html = render({
         "today": today, "start": start["fecha"], "sim_ret": sim_ret, "bench_ret": bench_ret,
         "equity": [(r["fecha"], float(r["equity"])) for r in eq_rows], "positions": positions, "picks": picks,
