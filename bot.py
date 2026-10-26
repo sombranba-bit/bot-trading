@@ -14,6 +14,7 @@ from alpaca.trading.enums import OrderSide, TimeInForce
 from alpaca.trading.requests import MarketOrderRequest
 
 from config import CRYPTO, CRYPTO_ALPACA, MIN_VOTES, NOTIONAL, UNIVERSE
+from notify import telegram
 from signals import votes
 
 
@@ -68,11 +69,13 @@ def main() -> None:
                 symbol=symbol, notional=NOTIONAL, side=OrderSide.BUY, time_in_force=tif))
             log_trade(symbol, "COMPRA", n)
             acciones.append(f"COMPRA {symbol}")
+            telegram(f"🟢 COMPRA {symbol} · {n}/3 señales (simulación)")
             print("COMPRA", symbol, n)
         elif not want and is_in:
             trading.close_position(key)
             log_trade(symbol, "VENTA", n)
             acciones.append(f"VENTA {symbol}")
+            telegram(f"🔴 VENTA {symbol} · {n}/3 señales (simulación)")
             print("VENTA", symbol, n)
 
     save_status(market_open, acciones)

@@ -8,13 +8,15 @@ import os
 from datetime import date, timedelta
 
 import pandas as pd
-import requests
 import yfinance as yf
 from alpaca.trading.client import TradingClient
 
-from config import BENCHMARK, CRYPTO, MIN_VOTES, UNIVERSE
+from config import BENCHMARK, CRYPTO, CRYPTO_ALPACA, MIN_VOTES, UNIVERSE
+from notify import telegram
 from page import render
 from signals import votes
+
+ALPACA_TO_TICKER = {v.replace("/", ""): k for k, v in CRYPTO_ALPACA.items()}  # p. ej. BTCUSD -> BTC-USD
 
 EVAL_DAYS = 90  # cada pronóstico se evalúa 90 días después
 TICKERS = UNIVERSE + CRYPTO
@@ -55,16 +57,8 @@ def append_csv(path, fields, rows):
 def info(t, screen):
     s = screen.get(t, {})  # datos del screening; si faltan, se muestra solo el ticker
     return {"name": s.get("name") or t, "sector": s.get("sector", ""), "industry": s.get("industry", ""),
-            "summary": s.get("summary", ""), "web": s.get("web", "")}
-
-
-def telegram(text):
-    tok, chat = os.environ.get("TELEGRAM_TOKEN"), os.environ.get("TELEGRAM_CHAT_ID")
-    if not tok or not chat:
-        print("Telegram no configurado; solo se guarda el informe.")
-        return
-    requests.post(f"https://api.telegram.org/bot{tok}/sendMessage",
-                  data={"chat_id": chat, "text": text[:4000]}, timeout=20)
+            "summary": s.get("summary", ""), "web": s.get("web", ""), "pe": s.get("pe"),
+            "target": s.get("target"), "upside": s.get("upside")}
 
 
 def main() -> None:
@@ -83,7 +77,8 @@ def main() -> None:
     sim_ret = equity / float(start["equity"]) - 1
     bench = yf.download(BENCHMARK, start=start["fecha"], progress=False, auto_adjust=True)["Close"].iloc[:, 0]
     bench_ret = float(bench.iloc[-1] / bench.iloc[0] - 1) if len(bench) > 1 else 0.0
-    positions = [{"symbol": p.symbol, "value": float(p.market_value), "pl": float(p.unrealized_plpc)}
+    positions = [{"symbol": p.symbol, "ticker": ALPACA_TO_TICKER.get(p.symbol, p.symbol),
+                  "value": float(p.market_value), "pl": float(p.unrealized_plpc)}
                  for p in trading.get_all_positions()]
 
     # 2. Señales de todas las acciones; pronósticos = al menos MIN_VOTES votos
@@ -95,10 +90,11 @@ def main() -> None:
             print("sin datos:", t, e)
             continue
         n, v = votes(close, screen.get(t, {}).get("undervalued", False))
-        f = {"n": n, "v": v, "precio": round(float(close.iloc[-1]), 2)}
+        f = {"n": n, "v": v, "precio": round(float(close.iloc[-1]), 2), "info": info(t, screen),
+             "hist": [round(float(x), 2) for x in close.iloc[-252:]]}  # último año, para la ficha
         grid.append((t, f))
         if n >= MIN_VOTES:
-            picks.append({"ticker": t, "votos": n, "precio": f["precio"], "flags": v, "info": info(t, screen)})
+            picks.append({"ticker": t, "votos": n, "precio": f["precio"], "flags": v, "info": f["info"]})
     # Cada acción se registra solo la primera vez que cumple un criterio, para no contar días repetidos
     seen = {(r["criterio"], r["ticker"]) for r in read_csv(PICKS)}
     criterios = sorted({MIN_VOTES, 3})
@@ -127,7 +123,7 @@ def main() -> None:
             f"{eval_txt}")
     html = render({
         "today": today, "start": start["fecha"], "sim_ret": sim_ret, "bench_ret": bench_ret,
-        "equity": [float(r["equity"]) for r in eq_rows], "positions": positions, "picks": picks,
+        "equity": [(r["fecha"], float(r["equity"])) for r in eq_rows], "positions": positions, "picks": picks,
         "grid": grid, "trades": read_csv("data/trades.csv")[-8:][::-1], "status": status, "eval_txt": eval_txt,
     })
     os.makedirs("docs", exist_ok=True)

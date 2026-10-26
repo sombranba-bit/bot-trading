@@ -1,4 +1,4 @@
-"""Página del informe para GitHub Pages: pestañas, pantalla completa, logos, descripciones y estado del bot."""
+"""Página del informe para GitHub Pages: pestañas, fichas por acción, precios que se actualizan solos."""
 from html import escape
 from urllib.parse import urlparse
 
@@ -27,17 +27,21 @@ def cls(x):
     return "pos" if x >= 0 else "neg"
 
 
-def equity_svg(vals):
+def spark(vals, h=240):
     if len(vals) < 2:
-        return '<div class="empty">Primer día de seguimiento. La curva aparecerá cuando haya más datos.</div>'
-    w, h = 800, 240
+        return '<div class="empty">Sin datos suficientes todavía.</div>'
+    w = 800
     lo, hi = min(vals), max(vals)
     span = (hi - lo) or 1
     pts = " ".join(f"{i * w / (len(vals) - 1):.1f},{h - (v - lo) / span * (h - 30) - 15:.1f}"
                    for i, v in enumerate(vals))
-    return (f'<svg viewBox="0 0 {w} {h}" preserveAspectRatio="none" class="chart">'
+    return (f'<svg viewBox="0 0 {w} {h}" preserveAspectRatio="none" class="chart" style="height:{h}px">'
             f'<polyline points="{pts}" fill="none" stroke="var(--acc)" stroke-width="3" '
             f'vector-effect="non-scaling-stroke"/></svg>')
+
+
+def open_js(t):
+    return f"document.getElementById('d-{t}').showModal()"
 
 
 def pick_card(p):
@@ -45,19 +49,41 @@ def pick_card(p):
     chips = "".join(f'<span class="chip{" on" if on else ""}">{nm}</span>'
                     for nm, on in zip(NAMES, p["flags"]))
     meta = escape(c["sector"]) + (f" · {escape(c['industry'])}" if c["industry"] else "")
-    return (f'<article class="pick">{logo(p["ticker"], c)}<div class="pb">'
+    return (f'<article class="pick" role="button" onclick="{open_js(p["ticker"])}">{logo(p["ticker"], c)}<div class="pb">'
             f'<div class="ttl"><strong>{escape(c["name"])}</strong><span class="tk">{escape(p["ticker"])}</span></div>'
-            f'<div class="meta">{meta} · {p["precio"]} USD</div>'
+            f'<div class="meta">{meta} · {p["precio"]} USD <span class="px" data-p="{escape(p["ticker"])}"></span></div>'
             f'<p>{desc(c)}</p><div class="chips">{chips}</div></div></article>')
 
 
 def mini_pick(p):
     return (f'<div class="mini">{logo(p["ticker"], p["info"], "sm")}<div><b>{escape(p["info"]["name"])}</b>'
-            f'<div class="meta">{escape(p["ticker"])} · {p["votos"]}/3 señales</div></div></div>')
+            f'<div class="meta">{escape(p["ticker"])} · {p["votos"]}/3 señales '
+            f'<span class="px" data-p="{escape(p["ticker"])}"></span></div></div></div>')
 
 
 def heat_cell(t, f):
-    return f'<div class="cell v{f["n"]}"><b>{escape(t)}</b><span>{f["n"]}/3</span></div>'
+    return (f'<div class="cell v{f["n"]}" role="button" onclick="{open_js(t)}"><b>{escape(t)}</b>'
+            f'<span>{f["n"]}/3 señales</span><em class="px" data-p="{escape(t)}"></em></div>')
+
+
+def dialog(t, f):
+    c = f["info"]
+    chips = "".join(f'<span class="chip{" on" if on else ""}">{nm}</span>' for nm, on in zip(NAMES, f["v"]))
+    pe = f"{c['pe']:.1f}" if c.get("pe") else "n/d"
+    target = f"{c['target']:.2f} USD" if c.get("target") else "n/d"
+    upside = pct(c["upside"]) if c.get("upside") is not None else "n/d"
+    meta = escape(c["sector"]) + (f" · {escape(c['industry'])}" if c["industry"] else "")
+    return (f'<dialog id="d-{escape(t)}" class="dlg">'
+            f'<div class="dh">{logo(t, c)}<div><strong>{escape(c["name"])}</strong>'
+            f'<div class="meta">{escape(t)} · {meta}</div></div>'
+            f'<button class="x" onclick="this.closest(\'dialog\').close()" aria-label="Cerrar">✕</button></div>'
+            f'<div class="big-px"><span class="px" data-p="{escape(t)}"></span></div>'
+            f'{spark(f["hist"], 140)}<p class="meta">Último año · cierre diario</p>'
+            f'<p>{desc(c)}</p><div class="chips">{chips}</div>'
+            f'<div class="stats"><div><span>P/E</span><b>{pe}</b></div>'
+            f'<div><span>Precio objetivo</span><b>{target}</b></div>'
+            f'<div><span>Potencial</span><b>{upside}</b></div>'
+            f'<div><span>Señales</span><b>{f["n"]}/3</b></div></div></dialog>')
 
 
 def kpi(label, value, c=""):
@@ -72,12 +98,18 @@ def render(ctx) -> str:
         pill = '<span class="pill off">Bot parado (KILL_SWITCH)</span>'
     else:
         mercado = "Bolsa EE. UU. abierta" if st["mercado_abierto"] else "Bolsa EE. UU. cerrada (solo cripto)"
-        pill = (f'<span class="pill ok"><i></i> Bot activo · último ciclo <b id="ago" data-ts="{st["ts"]}">'
+        pill = (f'<span class="pill ok"><i></i> Bot activo · último ciclo <b class="ago" data-ts="{st["ts"]}">'
                 f'{st["ts"]}</b></span><span class="pill">{mercado}</span>')
 
+    eq = ctx["equity"]
+    eq_vals = [v for _, v in eq]
+    axis = (f'<div class="axis"><span>{eq[0][0]} · {eq[0][1]:,.0f} USD</span>'
+            f'<span>{eq[-1][0]} · {eq[-1][1]:,.0f} USD</span></div>') if eq else ""
+
     positions = "".join(
-        f'<div class="row"><b>{escape(p["symbol"])}</b><span>{p["value"]:,.0f} USD</span>'
-        f'<span class="{cls(p["pl"])}">{pct(p["pl"])}</span></div>' for p in ctx["positions"]
+        f'<div class="row"><b>{escape(p["symbol"])} <span class="px" data-p="{escape(p["ticker"])}"></span></b>'
+        f'<span>{p["value"]:,.0f} USD</span><span class="{cls(p["pl"])}">{pct(p["pl"])}</span></div>'
+        for p in ctx["positions"]
     ) or '<p class="muted">Sin posiciones abiertas.</p>'
 
     trades = "".join(
@@ -90,6 +122,7 @@ def render(ctx) -> str:
     picks = "".join(pick_card(p) for p in ctx["picks"]) or no_picks
     minis = "".join(mini_pick(p) for p in ctx["picks"][:6]) or no_picks
     heat = "".join(heat_cell(t, f) for t, f in ctx["grid"])
+    dialogs = "".join(dialog(t, f) for t, f in ctx["grid"])
     nav = "".join(f'<button data-t="{k}">{v}</button>' for k, v in TABS)
     return f"""<!doctype html>
 <html lang="es"><head><meta charset="utf-8">
@@ -112,16 +145,18 @@ h1{{margin:0;font-size:1.6rem}} .sub{{margin:2px 0 0;color:var(--muted)}}
 .tabs button.on{{color:var(--txt);border-color:var(--acc)}}
 .tab{{display:none}} .tab.on{{display:block}}
 .kpis{{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}}
-.kpi,.panel{{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}}
+.kpi,.panel,.dlg{{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}}
 .kpi span{{color:var(--muted);font-size:.85rem}} .kpi strong{{display:block;font-size:1.8rem;margin-top:4px}}
 .grid{{display:grid;grid-template-columns:2fr 1fr;gap:16px}}
-.panel+.panel{{margin-top:16px}} .grid .panel+.panel{{margin-top:0}}
 h2{{margin:0 0 12px;font-size:1rem;color:var(--acc)}}
-.chart{{width:100%;height:240px;display:block}} .empty,.muted{{color:var(--muted)}} .empty{{padding:40px 0;text-align:center}}
+.chart{{width:100%;display:block}} .axis{{display:flex;justify-content:space-between;color:var(--muted);font-size:.8rem;margin-top:6px}}
+.empty,.muted{{color:var(--muted)}} .empty{{padding:40px 0;text-align:center}}
 .pos{{color:var(--pos)}} .neg{{color:var(--neg)}}
-.row{{display:grid;grid-template-columns:1.2fr 1fr .8fr;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.92rem}}
+.px{{font-variant-numeric:tabular-nums;font-weight:600;margin-left:6px;font-size:.85rem;color:var(--muted)}}
+.px.pos{{color:var(--pos)}} .px.neg{{color:var(--neg)}}
+.row{{display:grid;grid-template-columns:1.4fr 1fr .8fr;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.92rem}}
 .row:last-child{{border:0}} .row span:last-child{{text-align:right}}
-.pick{{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}} .pick:last-child{{border:0}}
+.pick{{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer}} .pick:last-child{{border:0}}
 .mini{{display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}} .mini:last-child{{border:0}}
 .pb{{min-width:0}} .pick p{{margin:6px 0;font-size:.92rem}}
 .ttl{{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}} .tk{{color:var(--acc);font-size:.85rem;font-weight:600}}
@@ -132,19 +167,27 @@ h2{{margin:0 0 12px;font-size:1rem;color:var(--acc)}}
 .chips{{display:flex;gap:6px;flex-wrap:wrap}}
 .chip{{font-size:.75rem;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}}
 .chip.on{{border-color:var(--pos);color:var(--pos)}}
-.heat{{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}}
-.cell{{border-radius:10px;padding:10px;font-size:.8rem;display:flex;flex-direction:column;gap:2px}}
-.cell b{{font-size:.9rem}} .cell span{{opacity:.8}}
+.heat{{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}}
+.cell{{border-radius:10px;padding:10px;font-size:.8rem;display:flex;flex-direction:column;gap:2px;cursor:pointer}}
+.cell:hover{{outline:1px solid var(--acc)}}
+.cell b{{font-size:.9rem}} .cell span{{opacity:.8}} .cell em{{font-style:normal}}
 .v0{{background:var(--line);color:var(--muted)}} .v1{{background:#1f3a2a;color:#9ee6ad}}
 .v2{{background:#1f6f3a;color:#fff}} .v3{{background:var(--pos);color:#06210d}}
+.v2 .px,.v3 .px,.v1 .px{{color:inherit}}
 .legend{{font-size:.8rem;margin-top:12px}}
+.dlg{{width:min(560px,92vw);color:var(--txt)}} .dlg::backdrop{{background:rgba(0,0,0,.6)}}
+.dh{{display:flex;gap:12px;align-items:center}} .dh>div{{flex:1;min-width:0}} .dh .logo{{flex:none}}
+.x{{background:none;border:0;color:var(--muted);font-size:1.2rem;cursor:pointer}}
+.big-px{{font-size:1.8rem;font-weight:700;margin:14px 0 6px}} .big-px .px{{font-size:1.1rem;margin-left:10px}}
+.stats{{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}}
+.stats div{{background:var(--bg);border-radius:10px;padding:10px}} .stats span{{display:block;color:var(--muted);font-size:.75rem}}
 footer{{margin-top:24px;color:var(--muted);font-size:.8rem}}
-@media (max-width:1000px){{.grid{{grid-template-columns:1fr}} .kpis{{grid-template-columns:repeat(2,1fr)}}}}
-@media (max-width:560px){{.wrap{{padding:16px}} .kpi strong{{font-size:1.4rem}}}}
+@media (max-width:1000px){{.grid{{grid-template-columns:1fr}} .kpis{{grid-template-columns:repeat(2,1fr)}} .panel+.panel{{margin-top:16px}}}}
+@media (max-width:560px){{.wrap{{padding:16px}} .kpi strong{{font-size:1.4rem}} .stats{{grid-template-columns:repeat(2,1fr)}}}}
 </style></head>
 <body><div class="wrap">
 <header class="top"><div><h1>Bot de trading</h1><p class="sub">Paper trading · informe del {ctx["today"]}</p></div>
-<div>{pill}</div></header>
+<div>{pill}<span class="pill">Precios <b id="pxts">cargando…</b></span></div></header>
 
 <nav class="tabs">{nav}</nav>
 
@@ -156,7 +199,7 @@ footer{{margin-top:24px;color:var(--muted);font-size:.8rem}}
     {kpi("Pronósticos hoy", len(ctx["picks"]))}
   </div>
   <div class="grid">
-    <div class="panel"><h2>Evolución de la simulación</h2>{equity_svg(ctx["equity"])}</div>
+    <div class="panel"><h2>Evolución de la simulación</h2>{spark(eq_vals)}{axis}</div>
     <div class="panel"><h2>Pronósticos de hoy</h2>{minis}</div>
   </div>
 </section>
@@ -164,13 +207,14 @@ footer{{margin-top:24px;color:var(--muted);font-size:.8rem}}
 <section class="tab" id="pronosticos"><div class="panel"><h2>Pronósticos de hoy</h2>{picks}</div></section>
 <section class="tab" id="cartera"><div class="panel"><h2>Cartera</h2>{positions}</div></section>
 <section class="tab" id="senales"><div class="panel"><h2>Señales por activo</h2><div class="heat">{heat}</div>
-  <p class="legend muted">Número de señales a favor (de 3). Con 2 o más, el bot compra.</p></div></section>
+  <p class="legend muted">Número de señales a favor (de 3). Con 2 o más, el bot compra. Pulsa una acción para ver su ficha.</p></div></section>
 <section class="tab" id="actividad"><div class="panel"><h2>Actividad reciente</h2>{trades}</div></section>
 <section class="tab" id="evaluacion"><div class="panel"><h2>Evaluación de pronósticos</h2>
   <p>{escape(ctx["eval_txt"])}</p>
   <p class="muted legend">Exceso = rentabilidad de cada acción menos la del VWCE desde su fecha. Un valor positivo significa que el criterio aporta algo frente al mercado.</p></div></section>
 
-<footer>Simulación, no asesoramiento financiero. Datos de Yahoo Finance y Alpaca.</footer>
+{dialogs}
+<footer>Simulación, no asesoramiento financiero. Datos de Yahoo Finance y Alpaca. Precios con retraso de hasta 15 minutos.</footer>
 </div>
 <script>
 const tabs=[...document.querySelectorAll('.tabs button')], secs=[...document.querySelectorAll('.tab')];
@@ -182,9 +226,28 @@ function show(id){{
 }}
 tabs.forEach(b=>b.onclick=()=>show(b.dataset.t));
 show(location.hash.slice(1)||'resumen');
-const el=document.getElementById('ago');
-if(el){{const m=Math.round((Date.now()-Date.parse(el.dataset.ts))/60000);
-el.textContent=m<60?'hace '+m+' min':'hace '+Math.round(m/60)+' h';}}
+
+function ago(){{
+  document.querySelectorAll('.ago,#pxts').forEach(el=>{{
+    if(!el.dataset.ts) return;
+    const m=Math.round((Date.now()-Date.parse(el.dataset.ts))/60000);
+    el.textContent=m<60?'hace '+m+' min':'hace '+Math.round(m/60)+' h';
+  }});
+}}
+async function precios(){{
+  try{{
+    const j=await (await fetch('prices.json?'+Date.now())).json();
+    document.querySelectorAll('[data-p]').forEach(e=>{{
+      const d=j.p[e.dataset.p]; if(!d) return;
+      e.textContent=d.p.toFixed(2)+' '+(d.v>=0?'▲ +':'▼ ')+d.v.toFixed(2)+'%';
+      e.className='px '+(d.v>=0?'pos':'neg');
+    }});
+    document.getElementById('pxts').dataset.ts=j.ts;
+    ago();
+  }}catch(e){{ /* sin precios: la página sigue mostrando el informe */ }}
+}}
+ago(); precios();
+setInterval(precios, 60000); setInterval(ago, 60000);
 </script>
 </body></html>
 """
