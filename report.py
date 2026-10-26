@@ -6,6 +6,7 @@ import csv
 import json
 import os
 from datetime import date, timedelta
+from html import escape
 
 import requests
 import yfinance as yf
@@ -36,6 +37,25 @@ def append_csv(path, fields, rows):
         if new:
             w.writeheader()
         w.writerows(rows)
+
+
+def company(t):
+    try:
+        i = yf.Ticker(t).info  # datos de Yahoo: pueden faltar campos
+    except Exception:
+        i = {}
+    return {"name": i.get("longName") or t, "sector": i.get("sector", ""), "industry": i.get("industry", ""),
+            "summary": (i.get("longBusinessSummary") or "")[:280], "logo": i.get("logo_url", "")}
+
+
+def pick_html(p):
+    c = p["info"]
+    logo = (f'<img src="{escape(c["logo"])}" alt="" width="40" height="40">' if c["logo"]
+            else f'<div class="ph">{escape(p["ticker"][:4])}</div>')
+    return (f'<div class="pick">{logo}<div><strong>{escape(c["name"])}</strong> '
+            f'<span class="muted">{p["ticker"]} · {p["votos"]}/3 · {p["precio"]} USD</span>'
+            f'<p class="muted">{escape(c["sector"])} {("· " + escape(c["industry"])) if c["industry"] else ""}</p>'
+            f'<p>{escape(c["summary"])}</p></div></div>')
 
 
 def telegram(text):
@@ -69,9 +89,9 @@ def main() -> None:
         close = yf.download(t, period="2y", progress=False, auto_adjust=True)["Close"].iloc[:, 0]
         n, _ = votes(close, screen.get(t, {}).get("undervalued", False))
         if n >= MIN_VOTES:
-            picks.append({"ticker": t, "votos": n, "precio": round(float(close.iloc[-1]), 2)})
+            picks.append({"ticker": t, "votos": n, "precio": round(float(close.iloc[-1]), 2), "info": company(t)})
     append_csv("data/forecasts.csv", ["fecha", "ticker", "votos", "precio"],
-               [{"fecha": today, **p} for p in picks])
+               [{"fecha": today, "ticker": p["ticker"], "votos": p["votos"], "precio": p["precio"]} for p in picks])
 
     # 3. Evaluación de pronósticos antiguos frente al benchmark
     old_cut = (date.today() - timedelta(days=EVAL_DAYS)).isoformat()
@@ -97,9 +117,7 @@ def main() -> None:
     cards = "".join(f'<div class="card"><span>{k}</span><strong class="{c}">{v}</strong></div>'
                     for k, v, c in [("Simulación", f"{sim_ret:+.1%}", "pos" if sim_ret >= 0 else "neg"),
                                     ("Benchmark VWCE", f"{bench_ret:+.1%}", "pos" if bench_ret >= 0 else "neg")])
-    rows = "".join(f"<tr><td>{p['ticker']}</td><td>{p['votos']}/3</td><td>{p['precio']}</td></tr>" for p in picks)
-    table = (f"<table><tr><th>Activo</th><th>Votos</th><th>Precio</th></tr>{rows}</table>" if picks
-             else "<p class='muted'>Ninguna acción cumple el criterio hoy.</p>")
+    table = "".join(pick_html(p) for p in picks) or "<p class='muted'>Ninguna acción cumple el criterio hoy.</p>"
     html = f"""<!doctype html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -116,7 +134,9 @@ h1{{font-size:1.5rem;margin:0 0 4px}} .sub{{color:var(--muted);margin:0 0 24px}}
 .card strong{{font-size:1.6rem}} .pos{{color:var(--pos)}} .neg{{color:var(--neg)}}
 h2{{font-size:1.05rem;margin:24px 0 8px;color:var(--acc)}}
 table{{width:100%;border-collapse:collapse}} th,td{{text-align:left;padding:8px;border-bottom:1px solid var(--line)}}
-th{{color:var(--muted);font-weight:500;font-size:.85rem}}
+.pick{{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}} .pick:last-child{{border:0}}
+.pick img{{border-radius:8px;flex:none;background:#fff}} .pick p{{margin:4px 0;font-size:.9rem}}
+.ph{{width:40px;height:40px;border-radius:8px;background:var(--line);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex:none}}
 .muted{{color:var(--muted)}} footer{{margin-top:32px;color:var(--muted);font-size:.8rem}}
 @media (max-width:480px){{.cards{{grid-template-columns:1fr}}}}
 </style></head>
