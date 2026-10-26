@@ -119,6 +119,12 @@ def render(ctx) -> str:
         f'{escape(r["accion"])}</span></div>' for r in ctx["trades"]
     ) or '<p class="muted">Todavía no ha habido operaciones.</p>'
 
+    bt = "".join(
+        f'<div class="row bt"><b>{escape(r["escenario"])}</b><span>{pct(float(r["anual"]))} al año</span>'
+        f'<span class="neg">{pct(float(r["max_caida"]))}</span><span class="{cls(float(r["total"]))}">{pct(float(r["total"]))}</span></div>'
+        for r in ctx["backtest"]
+    ) or '<p class="muted">Sin resultados del backtest todavía.</p>'
+
     no_picks = '<p class="muted">Ninguna acción cumple el criterio hoy.</p>'
     picks = "".join(pick_card(p) for p in ctx["picks"]) or no_picks
     minis = "".join(mini_pick(p) for p in ctx["picks"][:6]) or no_picks
@@ -174,6 +180,7 @@ h2{{margin:0 0 12px;font-size:1rem;color:var(--acc)}}
 .px.pos{{color:var(--pos)}} .px.neg{{color:var(--neg)}}
 .row{{display:grid;grid-template-columns:1.4fr 1fr .8fr;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.92rem}}
 .row:last-child{{border:0}} .row span:last-child{{text-align:right}}
+.bt{{grid-template-columns:2fr 1.2fr 1fr 1fr}} .bt span+span{{text-align:right}} .bt.head{{color:var(--muted);font-size:.8rem;border-bottom:1px solid var(--line)}}
 .pick{{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer}} .pick:last-child{{border:0}}
 .mini{{display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}} .mini:last-child{{border:0}}
 .pb{{min-width:0}} .pick p{{margin:6px 0;font-size:.92rem}}
@@ -229,7 +236,10 @@ footer{{margin-top:24px;color:var(--muted);font-size:.8rem}}
 <section class="tab" id="actividad"><div class="panel"><h2>Actividad reciente</h2>{trades}</div></section>
 <section class="tab" id="evaluacion"><div class="panel"><h2>Evaluación de pronósticos</h2>
   <p>{escape(ctx["eval_txt"])}</p>
-  <p class="muted legend">Exceso = rentabilidad de cada acción menos la del VWCE desde su fecha. Un valor positivo significa que el criterio aporta algo frente al mercado.</p></div></section>
+  <p class="muted legend">Exceso = rentabilidad de cada acción menos la del VWCE desde su fecha, descontando un 0,2 % de costes. Un valor positivo significa que el criterio aporta algo frente al mercado.</p></div>
+  <div class="panel" style="margin-top:16px"><h2>Backtest: tendencia frente a comprar y mantener</h2>
+  <div class="row bt head"><span>Escenario</span><span>Anual</span><span>Caída máx.</span><span>Total</span></div>{bt}
+  <p class="muted legend">Desde marzo de 2019, mismo cesto de 42 acciones frente a VWCE. Solo cubre la señal de tendencia, no la infravaloración. El cesto son las acciones de hoy, así que los escenarios que las mantienen salen favorecidos.</p></div></section>
 
 {dialogs}
 <footer>Simulación, no asesoramiento financiero. Datos de Yahoo Finance y Alpaca. Precios con retraso de hasta 15 minutos.</footer>

@@ -197,6 +197,7 @@ def main() -> None:
         "today": today, "start": start["fecha"], "sim_ret": sim_ret, "bench_ret": bench_ret,
         "equity": [(r["fecha"], float(r["equity"])) for r in eq_rows], "positions": positions, "picks": picks,
         "grid": grid, "trades": read_csv("data/trades.csv")[-8:][::-1], "status": status, "eval_txt": eval_txt,
+        "backtest": read_csv("data/backtest.csv"),
     })
     os.makedirs("docs", exist_ok=True)
     with open("docs/index.html", "w") as f:
