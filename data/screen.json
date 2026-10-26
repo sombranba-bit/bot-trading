@@ -38,8 +38,8 @@
  "AMZN": {
   "pe": 20.03942,
   "price": 249.09,
-  "target": 331.71967,
-  "upside": 0.33172616323417237,
+  "target": 332.2369,
+  "upside": 0.33380264161548023,
   "undervalued": false,
   "name": "Amazon.com, Inc.",
   "sector": "Consumer Cyclical",
@@ -62,8 +62,8 @@
  "META": {
   "pe": 21.513477,
   "price": 630.56,
-  "target": 844.7731,
-  "upside": 0.33971882136513587,
+  "target": 845.49725,
+  "upside": 0.3408672449885817,
   "undervalued": false,
   "name": "Meta Platforms, Inc.",
   "sector": "Communication Services",
@@ -98,8 +98,8 @@
  "PG": {
   "pe": 24.084337,
   "price": 159.92,
-  "target": 172.34782,
-  "upside": 0.07771273136568291,
+  "target": 173.30435,
+  "upside": 0.08369403451725876,
   "undervalued": false,
   "name": "The Procter & Gamble Company",
   "sector": "Consumer Defensive",
@@ -144,7 +144,7 @@
   "web": "https://www.pepsico.com"
  },
  "WMT": {
-  "pe": 42.355637,
+  "pe": 43.583332,
   "price": 120.29,
   "target": 127.475,
   "upside": 0.05973065092692642,
@@ -158,8 +158,8 @@
  "HD": {
   "pe": 22.349895,
   "price": 319.38,
-  "target": 379.75,
-  "upside": 0.189022481057048,
+  "target": 379.0,
+  "upside": 0.18667418122612567,
   "undervalued": false,
   "name": "The Home Depot, Inc.",
   "sector": "Consumer Cyclical",
@@ -180,7 +180,7 @@
   "web": "https://www.visa.com"
  },
  "MA": {
-  "pe": 33.1801,
+  "pe": 33.745872,
   "price": 613.5,
   "target": 676.0381,
   "upside": 0.10193659331703331,
@@ -194,8 +194,8 @@
  "UNH": {
   "pe": 26.411575,
   "price": 410.7,
-  "target": 478.12,
-  "upside": 0.1641587533479425,
+  "target": 476.56,
+  "upside": 0.1603603603603605,
   "undervalued": false,
   "name": "UnitedHealth Group Incorporated",
   "sector": "Healthcare",
@@ -204,7 +204,7 @@
   "web": "https://www.unitedhealthgroup.com"
  },
  "PFE": {
-  "pe": 38.688313,
+  "pe": 39.19737,
   "price": 29.79,
   "target": 29.25962,
   "upside": -0.017803961060758544,
@@ -216,7 +216,7 @@
   "web": "https://www.pfizer.com"
  },
  "MRK": {
-  "pe": 111.59524,
+  "pe": 113.395164,
   "price": 140.61,
   "target": 159.76,
   "upside": 0.1361923049569731,
@@ -350,8 +350,8 @@
  "T": {
   "pe": 11.149733,
   "price": 20.85,
-  "target": 27.80435,
-  "upside": 0.3335419664268584,
+  "target": 27.71739,
+  "upside": 0.32937122302158284,
   "undervalued": true,
   "name": "AT&T Inc.",
   "sector": "Communication Services",
@@ -396,7 +396,7 @@
   "web": "https://www.bankofamerica.com"
  },
  "WFC": {
-  "pe": 11.575631,
+  "pe": 11.657264,
   "price": 82.65,
   "target": 97.02083,
   "upside": 0.1738757410768299,
