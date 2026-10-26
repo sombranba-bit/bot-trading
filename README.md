@@ -8,7 +8,7 @@ Bot de trading en **simulación (paper trading)**, con informe diario y pronóst
 - Se compra si hay **al menos 2 votos** de 3. Se vende cuando baja de 2.
 - **Bot** (`bot.yml`): se ejecuta cada 30 minutos y ajusta las posiciones en Alpaca paper.
 - **Informe diario** (`daily.yml`): lunes a viernes, tras el cierre de EE. UU. Compara la simulación con el ETF VWCE, publica los pronósticos del día en `docs/index.md` y lo envía a Telegram si está configurado.
-- Cada pronóstico se evalúa 90 días después frente al benchmark.
+- Cada acción se registra la primera vez que cumple 2 y 3 votos, y se evalúa a 90 días con el exceso frente a VWCE desde su fecha.
 
 ## Ficheros
 

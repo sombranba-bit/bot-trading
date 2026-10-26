@@ -7,6 +7,7 @@ import json
 import os
 from datetime import date, timedelta
 
+import pandas as pd
 import requests
 import yfinance as yf
 from alpaca.trading.client import TradingClient
@@ -17,6 +18,17 @@ from signals import votes
 
 EVAL_DAYS = 90  # cada pronóstico se evalúa 90 días después
 TICKERS = UNIVERSE + CRYPTO
+PICKS = "data/picks.csv"  # primera aparición de cada acción por criterio (2 y 3 votos)
+
+
+def excess(rows, last, bench):
+    """Rentabilidad de cada pronóstico menos la del benchmark desde su fecha."""
+    out = []
+    for r in rows:
+        b = bench[bench.index >= pd.Timestamp(r["fecha"])]
+        if not b.empty:
+            out.append((last[r["ticker"]] / float(r["precio"]) - 1) - (bench.iloc[-1] / b.iloc[0] - 1))
+    return out
 
 
 def last_price(t):
@@ -87,20 +99,25 @@ def main() -> None:
         grid.append((t, f))
         if n >= MIN_VOTES:
             picks.append({"ticker": t, "votos": n, "precio": f["precio"], "flags": v, "info": info(t, screen)})
-    append_csv("data/forecasts.csv", ["fecha", "ticker", "votos", "precio"],
-               [{"fecha": today, "ticker": p["ticker"], "votos": p["votos"], "precio": p["precio"]} for p in picks])
+    # Cada acción se registra solo la primera vez que cumple un criterio, para no contar días repetidos
+    seen = {(r["criterio"], r["ticker"]) for r in read_csv(PICKS)}
+    criterios = sorted({MIN_VOTES, 3})
+    append_csv(PICKS, ["fecha", "criterio", "ticker", "votos", "precio"],
+               [{"fecha": today, "criterio": str(c), "ticker": p["ticker"], "votos": p["votos"], "precio": p["precio"]}
+                for c in criterios for p in picks if p["votos"] >= c and (str(c), p["ticker"]) not in seen])
 
-    # 3. Evaluación de pronósticos antiguos frente al benchmark
+    # 3. Evaluación a 90 días: exceso de rentabilidad frente al benchmark, por criterio
     old_cut = (date.today() - timedelta(days=EVAL_DAYS)).isoformat()
-    old = [r for r in read_csv("data/forecasts.csv") if r["fecha"] <= old_cut]
-    eval_txt = "Sin pronósticos de más de 90 días todavía."
-    if old:
-        rets = [last_price(r["ticker"]) / float(r["precio"]) - 1 for r in old]
-        avg = sum(rets) / len(rets)
-        b = yf.download(BENCHMARK, start=old[0]["fecha"], progress=False, auto_adjust=True)["Close"].iloc[:, 0]
-        b_ret = float(b.iloc[-1] / b.iloc[0] - 1)
-        eval_txt = (f"Pronósticos de hace 90+ días ({len(old)}): rentabilidad media {avg:.1%} "
-                    f"frente a {b_ret:.1%} del benchmark.")
+    rows = [r for r in read_csv(PICKS) if r["fecha"] <= old_cut]
+    partes = []
+    if rows:
+        last = {t: last_price(t) for t in {r["ticker"] for r in rows}}
+        bench = yf.download(BENCHMARK, start=min(r["fecha"] for r in rows), progress=False, auto_adjust=True)["Close"].iloc[:, 0]
+        for c in criterios:
+            ex = excess([r for r in rows if r["criterio"] == str(c)], last, bench)
+            if ex:
+                partes.append(f"{c} votos: {len(ex)} pronósticos, exceso medio {sum(ex) / len(ex):+.1%} frente a VWCE")
+    eval_txt = " · ".join(partes) or "Sin pronósticos de más de 90 días todavía."
 
     # 4. Salida: texto para Telegram y página HTML
     text = (f"Informe {today}\n"
