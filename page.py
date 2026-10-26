@@ -86,8 +86,9 @@ def dialog(t, f):
             f'<div><span>Señales</span><b>{f["n"]}/3</b></div></div></dialog>')
 
 
-def kpi(label, value, c=""):
-    return f'<div class="kpi"><span>{label}</span><strong class="{c}">{value}</strong></div>'
+def kpi(label, value, c="", num=None, suf=""):
+    data = f' data-n="{num}" data-s="{suf}"' if num is not None else ""  # num: cifra que la página anima al cargar
+    return f'<div class="kpi"><span>{label}</span><strong class="{c}"{data}>{value}</strong></div>'
 
 
 def render(ctx) -> str:
@@ -148,7 +149,14 @@ h1{{margin:0;font-size:1.6rem}} .sub{{margin:2px 0 0;color:var(--muted)}}
 .tick{{animation:flash .9s ease-out;border-radius:4px}}
 .cell{{transition:transform .2s ease,outline-color .2s}} .cell:hover{{transform:translateY(-2px)}}
 .pick{{transition:background .2s ease}} .pick:hover{{background:rgba(88,166,255,.06)}}
-.dlg[open]{{animation:pop .25s ease both}}
+.dlg[open]{{animation:pop .3s cubic-bezier(.2,.8,.2,1) both}}
+@keyframes fade{{from{{opacity:0}}to{{opacity:1}}}}
+.dlg::backdrop{{animation:fade .3s ease both}}
+.tabs button{{transition:color .25s ease,border-color .25s ease,transform .15s ease}} .tabs button:active{{transform:scale(.96)}}
+.tab.on .pick,.tab.on .cell,.tab.on .row,.tab.on .mini{{animation:in .45s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0)*45ms)}}
+.kpi{{transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s ease}} .kpi:hover{{transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,.25)}}
+.panel{{transition:box-shadow .25s ease}} .panel:hover{{box-shadow:0 6px 20px rgba(0,0,0,.18)}}
+button:focus-visible,[role=button]:focus-visible{{outline:2px solid var(--acc);outline-offset:2px}}
 @media (prefers-reduced-motion: reduce){{*,*::before,*::after{{animation:none!important;transition:none!important}}}}
 .tabs{{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);margin-bottom:20px}}
 .tabs button{{background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:10px 14px;font:inherit;cursor:pointer;white-space:nowrap}}
@@ -203,10 +211,10 @@ footer{{margin-top:24px;color:var(--muted);font-size:.8rem}}
 
 <section class="tab" id="resumen">
   <div class="kpis">
-    {kpi("Simulación desde " + ctx["start"], pct(ctx["sim_ret"]), cls(ctx["sim_ret"]))}
-    {kpi("Benchmark VWCE", pct(ctx["bench_ret"]), cls(ctx["bench_ret"]))}
-    {kpi("Posiciones abiertas", len(ctx["positions"]))}
-    {kpi("Pronósticos hoy", len(ctx["picks"]))}
+    {kpi("Simulación desde " + ctx["start"], pct(ctx["sim_ret"]), cls(ctx["sim_ret"]), ctx["sim_ret"] * 100, "%")}
+    {kpi("Benchmark VWCE", pct(ctx["bench_ret"]), cls(ctx["bench_ret"]), ctx["bench_ret"] * 100, "%")}
+    {kpi("Posiciones abiertas", len(ctx["positions"]), "", len(ctx["positions"]))}
+    {kpi("Pronósticos hoy", len(ctx["picks"]), "", len(ctx["picks"]))}
   </div>
   <div class="grid">
     <div class="panel"><h2>Evolución de la simulación</h2>{spark(eq_vals)}{axis}</div>
@@ -232,8 +240,20 @@ function show(id){{
   if(!document.getElementById(id)) id='resumen';
   secs.forEach(s=>s.classList.toggle('on', s.id===id));
   tabs.forEach(b=>b.classList.toggle('on', b.dataset.t===id));
+  document.querySelectorAll('.tab.on .pick,.tab.on .cell,.tab.on .row,.tab.on .mini').forEach((el,i)=>el.style.setProperty('--i',i%16));
   history.replaceState(null,'','#'+id);
 }}
+function countUp(){{
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('[data-n]').forEach(el=>{{
+    const to=+el.dataset.n, suf=el.dataset.s||'', dec=suf==='%'?1:0, sg=suf==='%'&&to>0?'+':'';
+    const t0=performance.now();
+    const step=t=>{{ const k=Math.min(1,(t-t0)/900), e=1-Math.pow(1-k,3);
+      el.textContent=sg+(to*e).toFixed(dec)+suf; if(k<1) requestAnimationFrame(step); }};
+    requestAnimationFrame(step);
+  }});
+}}
+countUp();
 tabs.forEach(b=>b.onclick=()=>show(b.dataset.t));
 show(location.hash.slice(1)||'resumen');
 

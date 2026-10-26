@@ -17,6 +17,10 @@ BENCHMARK = "VWCE.DE"
 
 NOTIONAL = 1000   # dólares simulados por activo
 MIN_VOTES = 2     # comprar si al menos 2 de las 3 señales están a favor
+MAX_POSITIONS = 15      # tope de posiciones abiertas a la vez
+MAX_INVESTED = 15000    # tope de capital invertido (USD simulados)
+COST = 0.002            # comisión + deslizamiento, ida y vuelta, al evaluar pronósticos
+MIN_SAMPLE = 30         # pronósticos mínimos por criterio para sacar conclusiones
 
 # Criterios del screening de infravaloración
 PE_MAX = 20           # P/E de beneficios máximo

@@ -3,7 +3,8 @@
 Uso: python backtest.py
 Descarga datos históricos diarios con yfinance (solo funciona donde haya acceso a Yahoo, p. ej. GitHub Actions).
 """
-import numpy as np
+import os
+
 import pandas as pd
 import yfinance as yf
 
@@ -30,8 +31,11 @@ def run(ticker: str) -> dict:
 
 
 def main() -> None:
-    df = pd.DataFrame([run(t) for t in UNIVERSE])
     bench = run(BENCHMARK)
+    df = pd.DataFrame([run(t) for t in UNIVERSE] + [bench])
+    os.makedirs("data", exist_ok=True)
+    df.to_csv("data/backtest.csv", index=False)  # el flujo lo guarda en el repositorio
+    df = df.iloc[:-1]
     for col in ("strategy", "buy_hold"):
         df[col] = df[col].map("{:.1%}".format)
     print(df.to_string(index=False))

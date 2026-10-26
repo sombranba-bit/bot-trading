@@ -12,11 +12,17 @@ from config import PE_MAX, UNIVERSE, UPSIDE_MIN
 
 def run() -> dict:
     out = {}
+    prev = json.load(open("data/screen.json")) if os.path.exists("data/screen.json") else {}
     for t in UNIVERSE:
         try:
             info = yf.Ticker(t).info
         except Exception as e:  # una acción fallida no debe parar el resto
             print("sin datos:", t, e)
+            info = {}
+        if "longName" not in info and t in prev:  # Yahoo falló: conservar la última copia buena
+            out[t] = prev[t]
+            continue
+        if not info:
             continue
         pe = info.get("trailingPE")
         price = info.get("currentPrice") or info.get("regularMarketPrice")

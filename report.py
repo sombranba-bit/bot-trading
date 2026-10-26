@@ -12,7 +12,7 @@ import pandas as pd
 import yfinance as yf
 from alpaca.trading.client import TradingClient
 
-from config import BENCHMARK, CRYPTO, CRYPTO_ALPACA, MIN_VOTES, UNIVERSE
+from config import BENCHMARK, COST, CRYPTO, CRYPTO_ALPACA, MIN_SAMPLE, MIN_VOTES, UNIVERSE
 from notify import photo, telegram
 from page import render
 from signals import votes
@@ -44,7 +44,7 @@ def excess(rows, last, bench):
     for r in rows:
         b = bench[bench.index >= pd.Timestamp(r["fecha"])]
         if not b.empty:
-            out.append((last[r["ticker"]] / float(r["precio"]) - 1) - (bench.iloc[-1] / b.iloc[0] - 1))
+            out.append((last[r["ticker"]] / float(r["precio"]) - 1) - COST - (bench.iloc[-1] / b.iloc[0] - 1))
     return out
 
 
@@ -107,6 +107,22 @@ def chart(eq_rows, bench, positions, screen, path):
     plt.close(fig)
 
 
+def weekly(eq_rows, trades, grid, today):
+    since = (date.fromisoformat(today) - timedelta(days=7)).isoformat()
+    before = [r for r in eq_rows if r["fecha"] <= since]
+    ret = float(eq_rows[-1]["equity"]) / float((before or eq_rows)[-1]["equity"]) - 1
+    ops = [t for t in trades if t["fecha"][:10] > since]
+    top = sorted(grid, key=lambda g: -g[1]["n"])[:3]
+    return "\n".join([
+        f"🗓️ <b>Resumen semanal · {today}</b>", "",
+        f"💼 <b>Semana</b>  {ret:+.1%}",
+        f"🔁 <b>Operaciones</b>  {len(ops)}", "",
+        "🔥 <b>Acciones con más señales</b>",
+        *[f"{SECTOR_ICON.get(f['info']['sector'], '📦')} <b>{escape(t)}</b> · {f['n']}/3" for t, f in top], "",
+        '🔗 <a href="https://sombranba-bit.github.io/bot-trading/">Ver el panel completo</a>',
+    ])
+
+
 def main() -> None:
     today = date.today().isoformat()
     screen = json.load(open("data/screen.json")) if os.path.exists("data/screen.json") else {}
@@ -143,6 +159,7 @@ def main() -> None:
         grid.append((t, f))
         if n >= MIN_VOTES:
             picks.append({"ticker": t, "votos": n, "precio": f["precio"], "flags": v, "info": f["info"]})
+    picks.sort(key=lambda p: (-p["votos"], -(p["info"]["upside"] or 0)))  # más señales y más potencial, primero
     # Cada acción se registra solo la primera vez que cumple un criterio, para no contar días repetidos
     seen = {(r["criterio"], r["ticker"]) for r in read_csv(PICKS)}
     criterios = sorted({MIN_VOTES, 3})
@@ -160,7 +177,8 @@ def main() -> None:
         for c in criterios:
             ex = excess([r for r in rows if r["criterio"] == str(c)], last, bench)
             if ex:
-                partes.append(f"{c} votos: {len(ex)} pronósticos, exceso medio {sum(ex) / len(ex):+.1%} frente a VWCE")
+                aviso = "" if len(ex) >= MIN_SAMPLE else f" (muestra pequeña: menos de {MIN_SAMPLE}, no concluyente)"
+                partes.append(f"{c} votos: {len(ex)} pronósticos, exceso medio {sum(ex) / len(ex):+.1%} frente a VWCE{aviso}")
     eval_txt = " · ".join(partes) or "Sin pronósticos de más de 90 días todavía."
 
     # 4. Salida: texto para Telegram y página HTML
@@ -186,6 +204,8 @@ def main() -> None:
     open("docs/.nojekyll", "w").close()
     telegram(text)
     photo("docs/informe.png", "📉 Curva de la simulación frente a VWCE y reparto por sector")
+    if date.fromisoformat(today).weekday() == 4:  # viernes
+        telegram(weekly(eq_rows, read_csv("data/trades.csv"), grid, today))
     print(text)
 
 

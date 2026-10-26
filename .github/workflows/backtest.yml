@@ -4,7 +4,11 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: repo-writes
+  cancel-in-progress: false
 
 jobs:
   backtest:
@@ -16,3 +20,9 @@ jobs:
           python-version: "3.12"
       - run: pip install -r requirements.txt
       - run: python backtest.py
+      - name: Guardar resultados
+        run: |
+          git config user.name "bot-trading"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/backtest.csv
+          if ! git diff --cached --quiet; then git commit -qm "Backtest" && git pull -q --rebase origin main && git push -q origin main; fi
