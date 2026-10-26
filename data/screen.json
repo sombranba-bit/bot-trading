@@ -144,7 +144,7 @@
   "web": "https://www.pepsico.com"
  },
  "WMT": {
-  "pe": 43.583332,
+  "pe": 42.355637,
   "price": 120.29,
   "target": 127.475,
   "upside": 0.05973065092692642,
@@ -180,7 +180,7 @@
   "web": "https://www.visa.com"
  },
  "MA": {
-  "pe": 33.745872,
+  "pe": 33.1801,
   "price": 613.5,
   "target": 676.0381,
   "upside": 0.10193659331703331,
@@ -204,7 +204,7 @@
   "web": "https://www.unitedhealthgroup.com"
  },
  "PFE": {
-  "pe": 39.19737,
+  "pe": 38.688313,
   "price": 29.79,
   "target": 29.25962,
   "upside": -0.017803961060758544,
@@ -216,7 +216,7 @@
   "web": "https://www.pfizer.com"
  },
  "MRK": {
-  "pe": 113.395164,
+  "pe": 111.59524,
   "price": 140.61,
   "target": 159.76,
   "upside": 0.1361923049569731,
@@ -396,7 +396,7 @@
   "web": "https://www.bankofamerica.com"
  },
  "WFC": {
-  "pe": 11.657264,
+  "pe": 11.575631,
   "price": 82.65,
   "target": 97.02083,
   "upside": 0.1738757410768299,
