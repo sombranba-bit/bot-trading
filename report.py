@@ -1,4 +1,4 @@
-"""Informe diario: rendimiento de la simulación frente al benchmark, pronósticos y evaluación de pronósticos antiguos.
+"""Datos del informe diario. La presentación está en page.py.
 
 Escribe docs/index.html (GitHub Pages) y, si hay credenciales de Telegram, envía un resumen.
 """
@@ -6,16 +6,17 @@ import csv
 import json
 import os
 from datetime import date, timedelta
-from html import escape
 
 import requests
 import yfinance as yf
 from alpaca.trading.client import TradingClient
 
-from config import BENCHMARK, MIN_VOTES, UNIVERSE
+from config import BENCHMARK, CRYPTO, MIN_VOTES, UNIVERSE
+from page import render
 from signals import votes
 
 EVAL_DAYS = 90  # cada pronóstico se evalúa 90 días después
+TICKERS = UNIVERSE + CRYPTO
 
 
 def last_price(t):
@@ -39,23 +40,10 @@ def append_csv(path, fields, rows):
         w.writerows(rows)
 
 
-def company(t):
-    try:
-        i = yf.Ticker(t).info  # datos de Yahoo: pueden faltar campos
-    except Exception:
-        i = {}
-    return {"name": i.get("longName") or t, "sector": i.get("sector", ""), "industry": i.get("industry", ""),
-            "summary": (i.get("longBusinessSummary") or "")[:280], "logo": i.get("logo_url", "")}
-
-
-def pick_html(p):
-    c = p["info"]
-    logo = (f'<img src="{escape(c["logo"])}" alt="" width="40" height="40">' if c["logo"]
-            else f'<div class="ph">{escape(p["ticker"][:4])}</div>')
-    return (f'<div class="pick">{logo}<div><strong>{escape(c["name"])}</strong> '
-            f'<span class="muted">{p["ticker"]} · {p["votos"]}/3 · {p["precio"]} USD</span>'
-            f'<p class="muted">{escape(c["sector"])} {("· " + escape(c["industry"])) if c["industry"] else ""}</p>'
-            f'<p>{escape(c["summary"])}</p></div></div>')
+def info(t, screen):
+    s = screen.get(t, {})  # datos del screening; si faltan, se muestra solo el ticker
+    return {"name": s.get("name") or t, "sector": s.get("sector", ""), "industry": s.get("industry", ""),
+            "summary": s.get("summary", ""), "web": s.get("web", "")}
 
 
 def telegram(text):
@@ -70,8 +58,9 @@ def telegram(text):
 def main() -> None:
     today = date.today().isoformat()
     screen = json.load(open("data/screen.json")) if os.path.exists("data/screen.json") else {}
+    status = json.load(open("data/status.json")) if os.path.exists("data/status.json") else None
 
-    # 1. Equity de la simulación y benchmark
+    # 1. Cuenta, cartera y benchmark
     trading = TradingClient(os.environ["ALPACA_API_KEY"], os.environ["ALPACA_API_SECRET"], paper=True)
     equity = float(trading.get_account().equity)
     eq_rows = read_csv("data/equity.csv")
@@ -82,14 +71,22 @@ def main() -> None:
     sim_ret = equity / float(start["equity"]) - 1
     bench = yf.download(BENCHMARK, start=start["fecha"], progress=False, auto_adjust=True)["Close"].iloc[:, 0]
     bench_ret = float(bench.iloc[-1] / bench.iloc[0] - 1) if len(bench) > 1 else 0.0
+    positions = [{"symbol": p.symbol, "value": float(p.market_value), "pl": float(p.unrealized_plpc)}
+                 for p in trading.get_all_positions()]
 
-    # 2. Pronósticos de hoy: acciones con al menos MIN_VOTES votos
-    picks = []
-    for t in UNIVERSE:
-        close = yf.download(t, period="2y", progress=False, auto_adjust=True)["Close"].iloc[:, 0]
-        n, _ = votes(close, screen.get(t, {}).get("undervalued", False))
+    # 2. Señales de todas las acciones; pronósticos = al menos MIN_VOTES votos
+    grid, picks = [], []
+    for t in TICKERS:
+        try:
+            close = yf.download(t, period="2y", progress=False, auto_adjust=True)["Close"].iloc[:, 0]
+        except Exception as e:  # un valor fallido no debe parar el informe
+            print("sin datos:", t, e)
+            continue
+        n, v = votes(close, screen.get(t, {}).get("undervalued", False))
+        f = {"n": n, "v": v, "precio": round(float(close.iloc[-1]), 2)}
+        grid.append((t, f))
         if n >= MIN_VOTES:
-            picks.append({"ticker": t, "votos": n, "precio": round(float(close.iloc[-1]), 2), "info": company(t)})
+            picks.append({"ticker": t, "votos": n, "precio": f["precio"], "flags": v, "info": info(t, screen)})
     append_csv("data/forecasts.csv", ["fecha", "ticker", "votos", "precio"],
                [{"fecha": today, "ticker": p["ticker"], "votos": p["votos"], "precio": p["precio"]} for p in picks])
 
@@ -98,58 +95,24 @@ def main() -> None:
     old = [r for r in read_csv("data/forecasts.csv") if r["fecha"] <= old_cut]
     eval_txt = "Sin pronósticos de más de 90 días todavía."
     if old:
-        rets = []
-        for r in old:
-            now = last_price(r["ticker"])
-            rets.append(now / float(r["precio"]) - 1)
+        rets = [last_price(r["ticker"]) / float(r["precio"]) - 1 for r in old]
         avg = sum(rets) / len(rets)
         b = yf.download(BENCHMARK, start=old[0]["fecha"], progress=False, auto_adjust=True)["Close"].iloc[:, 0]
         b_ret = float(b.iloc[-1] / b.iloc[0] - 1)
         eval_txt = (f"Pronósticos de hace 90+ días ({len(old)}): rentabilidad media {avg:.1%} "
                     f"frente a {b_ret:.1%} del benchmark.")
 
-    # 4. Informe: texto para Telegram y página HTML para GitHub Pages
+    # 4. Salida: texto para Telegram y página HTML
     text = (f"Informe {today}\n"
             f"Simulación: {sim_ret:+.1%} desde {start['fecha']}\n"
             f"Benchmark VWCE: {bench_ret:+.1%}\n"
             f"Pronósticos hoy: {', '.join(p['ticker'] for p in picks) or 'ninguno'}\n"
             f"{eval_txt}")
-    cards = "".join(f'<div class="card"><span>{k}</span><strong class="{c}">{v}</strong></div>'
-                    for k, v, c in [("Simulación", f"{sim_ret:+.1%}", "pos" if sim_ret >= 0 else "neg"),
-                                    ("Benchmark VWCE", f"{bench_ret:+.1%}", "pos" if bench_ret >= 0 else "neg")])
-    table = "".join(pick_html(p) for p in picks) or "<p class='muted'>Ninguna acción cumple el criterio hoy.</p>"
-    html = f"""<!doctype html>
-<html lang="es"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bot de trading · {today}</title>
-<style>
-:root{{--bg:#0b0f14;--card:#141b24;--line:#1f2a37;--txt:#e6edf3;--muted:#8b98a5;--pos:#3fb950;--neg:#f85149;--acc:#58a6ff}}
-@media (prefers-color-scheme: light){{:root{{--bg:#f6f8fa;--card:#fff;--line:#d0d7de;--txt:#1f2328;--muted:#656d76;--pos:#1a7f37;--neg:#cf222e;--acc:#0969da}}}}
-body{{margin:0;background:var(--bg);color:var(--txt);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}}
-main{{max-width:720px;margin:0 auto;padding:24px 16px}}
-h1{{font-size:1.5rem;margin:0 0 4px}} .sub{{color:var(--muted);margin:0 0 24px}}
-.cards{{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}}
-.card,.box{{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}}
-.card span{{display:block;color:var(--muted);font-size:.85rem}}
-.card strong{{font-size:1.6rem}} .pos{{color:var(--pos)}} .neg{{color:var(--neg)}}
-h2{{font-size:1.05rem;margin:24px 0 8px;color:var(--acc)}}
-table{{width:100%;border-collapse:collapse}} th,td{{text-align:left;padding:8px;border-bottom:1px solid var(--line)}}
-.pick{{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}} .pick:last-child{{border:0}}
-.pick img{{border-radius:8px;flex:none;background:#fff}} .pick p{{margin:4px 0;font-size:.9rem}}
-.ph{{width:40px;height:40px;border-radius:8px;background:var(--line);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex:none}}
-.muted{{color:var(--muted)}} footer{{margin-top:32px;color:var(--muted);font-size:.8rem}}
-@media (max-width:480px){{.cards{{grid-template-columns:1fr}}}}
-</style></head>
-<body><main>
-<h1>Bot de trading</h1>
-<p class="sub">Simulación en paper trading · actualizado {today}</p>
-<div class="cards">{cards}</div>
-<div class="box"><h2>Pronósticos de hoy</h2>{table}</div>
-<div class="box"><h2>Evaluación de pronósticos antiguos</h2><p>{eval_txt}</p></div>
-<footer>Simulación, no asesoramiento financiero. Datos de Yahoo Finance y Alpaca.</footer>
-</main></body></html>
-"""
-
+    html = render({
+        "today": today, "start": start["fecha"], "sim_ret": sim_ret, "bench_ret": bench_ret,
+        "equity": [float(r["equity"]) for r in eq_rows], "positions": positions, "picks": picks,
+        "grid": grid, "trades": read_csv("data/trades.csv")[-8:][::-1], "status": status, "eval_txt": eval_txt,
+    })
     os.makedirs("docs", exist_ok=True)
     with open("docs/index.html", "w") as f:
         f.write(html)

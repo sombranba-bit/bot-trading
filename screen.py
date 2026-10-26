@@ -23,7 +23,10 @@ def run() -> dict:
         target = info.get("targetMeanPrice")
         upside = (target / price - 1) if target and price else None
         undervalued = bool(pe and 0 < pe < PE_MAX and upside is not None and upside >= UPSIDE_MIN)
-        out[t] = {"pe": pe, "price": price, "target": target, "upside": upside, "undervalued": undervalued}
+        out[t] = {"pe": pe, "price": price, "target": target, "upside": upside, "undervalued": undervalued,
+                  "name": info.get("longName") or t, "sector": info.get("sector", ""),
+                  "industry": info.get("industry", ""), "summary": (info.get("longBusinessSummary") or "")[:300],
+                  "web": info.get("website", "")}
 
     os.makedirs("data", exist_ok=True)
     with open("data/screen.json", "w") as f:

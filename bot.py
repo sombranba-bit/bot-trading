@@ -31,9 +31,17 @@ def log_trade(symbol, action, n):
         w.writerow([datetime.now(timezone.utc).isoformat(timespec="minutes"), symbol, action, n])
 
 
+def save_status(market_open, acciones, parado=False):
+    os.makedirs("data", exist_ok=True)
+    with open("data/status.json", "w") as f:
+        json.dump({"ts": datetime.now(timezone.utc).isoformat(timespec="minutes"), "mercado_abierto": market_open,
+                   "parado": parado, "acciones": acciones}, f)
+
+
 def main() -> None:
     if os.path.exists("KILL_SWITCH"):
         print("KILL_SWITCH presente: no se opera.")
+        save_status(False, [], parado=True)
         return
 
     screen = {}
@@ -43,6 +51,7 @@ def main() -> None:
     trading = TradingClient(os.environ["ALPACA_API_KEY"], os.environ["ALPACA_API_SECRET"], paper=True)
     market_open = trading.get_clock().is_open
     held = {p.symbol for p in trading.get_all_positions()}
+    acciones = []
 
     # Acciones solo con bolsa abierta; cripto siempre
     tickers = (UNIVERSE if market_open else []) + CRYPTO
@@ -58,11 +67,15 @@ def main() -> None:
             trading.submit_order(MarketOrderRequest(
                 symbol=symbol, notional=NOTIONAL, side=OrderSide.BUY, time_in_force=tif))
             log_trade(symbol, "COMPRA", n)
+            acciones.append(f"COMPRA {symbol}")
             print("COMPRA", symbol, n)
         elif not want and is_in:
             trading.close_position(key)
             log_trade(symbol, "VENTA", n)
+            acciones.append(f"VENTA {symbol}")
             print("VENTA", symbol, n)
+
+    save_status(market_open, acciones)
 
 
 if __name__ == "__main__":
