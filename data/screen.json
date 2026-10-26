@@ -1,0 +1,296 @@
+{
+ "AAPL": {
+  "pe": 39.43922,
+  "price": 343.91,
+  "target": 329.24768,
+  "upside": -0.04263417754645116,
+  "undervalued": false
+ },
+ "MSFT": {
+  "pe": 29.671307,
+  "price": 532.6,
+  "target": 603.4262,
+  "upside": 0.1329819752159218,
+  "undervalued": false
+ },
+ "GOOGL": {
+  "pe": 15.895634,
+  "price": 316.8,
+  "target": 429.12222,
+  "upside": 0.35455246212121216,
+  "undervalued": true
+ },
+ "AMZN": {
+  "pe": 20.03942,
+  "price": 249.09,
+  "target": 331.71967,
+  "upside": 0.33172616323417237,
+  "undervalued": false
+ },
+ "NVDA": {
+  "pe": 27.307207,
+  "price": 216.0,
+  "target": 328.95346,
+  "upside": 0.5229326851851852,
+  "undervalued": false
+ },
+ "META": {
+  "pe": 21.513477,
+  "price": 630.56,
+  "target": 844.7731,
+  "upside": 0.33971882136513587,
+  "undervalued": false
+ },
+ "JPM": {
+  "pe": 14.011745,
+  "price": 334.04,
+  "target": 372.26086,
+  "upside": 0.114420009579691,
+  "undervalued": false
+ },
+ "JNJ": {
+  "pe": 40.40971,
+  "price": 266.3,
+  "target": 279.4091,
+  "upside": 0.04922681186631617,
+  "undervalued": false
+ },
+ "PG": {
+  "pe": 24.084337,
+  "price": 159.92,
+  "target": 172.34782,
+  "upside": 0.07771273136568291,
+  "undervalued": false
+ },
+ "XOM": {
+  "pe": 23.75032,
+  "price": 184.54,
+  "target": 179.40909,
+  "upside": -0.02780378237780423,
+  "undervalued": false
+ },
+ "KO": {
+  "pe": 27.837837,
+  "price": 92.7,
+  "target": 95.625,
+  "upside": 0.0315533980582523,
+  "undervalued": false
+ },
+ "PEP": {
+  "pe": 17.038996,
+  "price": 135.46,
+  "target": 141.59091,
+  "upside": 0.04525992913037058,
+  "undervalued": false
+ },
+ "WMT": {
+  "pe": 42.355637,
+  "price": 120.29,
+  "target": 127.475,
+  "upside": 0.05973065092692642,
+  "undervalued": false
+ },
+ "HD": {
+  "pe": 22.349895,
+  "price": 319.38,
+  "target": 379.75,
+  "upside": 0.189022481057048,
+  "undervalued": false
+ },
+ "V": {
+  "pe": 34.396595,
+  "price": 404.16,
+  "target": 426.82108,
+  "upside": 0.056069576405384014,
+  "undervalued": false
+ },
+ "MA": {
+  "pe": 33.1801,
+  "price": 613.5,
+  "target": 676.0381,
+  "upside": 0.10193659331703331,
+  "undervalued": false
+ },
+ "UNH": {
+  "pe": 26.411575,
+  "price": 410.7,
+  "target": 478.12,
+  "upside": 0.1641587533479425,
+  "undervalued": false
+ },
+ "PFE": {
+  "pe": 38.688313,
+  "price": 29.79,
+  "target": 29.25962,
+  "upside": -0.017803961060758544,
+  "undervalued": false
+ },
+ "MRK": {
+  "pe": 111.59524,
+  "price": 140.61,
+  "target": 159.76,
+  "upside": 0.1361923049569731,
+  "undervalued": false
+ },
+ "CSCO": {
+  "pe": 33.105106,
+  "price": 110.24,
+  "target": 136.16,
+  "upside": 0.23512336719883886,
+  "undervalued": false
+ },
+ "INTC": {
+  "pe": null,
+  "price": 90.47,
+  "target": 117.71429,
+  "upside": 0.3011417044324085,
+  "undervalued": false
+ },
+ "IBM": {
+  "pe": 21.624573,
+  "price": 253.44,
+  "target": 257.21652,
+  "upside": 0.014901041666666615,
+  "undervalued": false
+ },
+ "ORCL": {
+  "pe": 19.75862,
+  "price": 126.06,
+  "target": 235.8034,
+  "upside": 0.8705648104077424,
+  "undervalued": true
+ },
+ "DIS": {
+  "pe": 22.76495,
+  "price": 110.41,
+  "target": 126.58281,
+  "upside": 0.146479576125351,
+  "undervalued": false
+ },
+ "NKE": {
+  "pe": 18.225962,
+  "price": 37.91,
+  "target": 36.5,
+  "upside": -0.037193352677393765,
+  "undervalued": false
+ },
+ "MCD": {
+  "pe": 20.376116,
+  "price": 250.83,
+  "target": 291.68967,
+  "upside": 0.1628978591077621,
+  "undervalued": false
+ },
+ "BA": {
+  "pe": 67.25357,
+  "price": 188.31,
+  "target": 267.22223,
+  "upside": 0.4190549094578091,
+  "undervalued": false
+ },
+ "CAT": {
+  "pe": 29.794662,
+  "price": 692.13,
+  "target": 926.9139,
+  "upside": 0.33921936630401817,
+  "undervalued": false
+ },
+ "GE": {
+  "pe": 32.96343,
+  "price": 288.43,
+  "target": 378.42856,
+  "upside": 0.3120291231841348,
+  "undervalued": false
+ },
+ "T": {
+  "pe": 11.149733,
+  "price": 20.85,
+  "target": 27.80435,
+  "upside": 0.3335419664268584,
+  "undervalued": true
+ },
+ "VZ": {
+  "pe": 11.223958,
+  "price": 43.1,
+  "target": 51.24091,
+  "upside": 0.1888842227378189,
+  "undervalued": true
+ },
+ "CVX": {
+  "pe": 22.3282,
+  "price": 231.99,
+  "target": 232.5,
+  "upside": 0.0021983706194232955,
+  "undervalued": false
+ },
+ "BAC": {
+  "pe": 12.05728,
+  "price": 50.52,
+  "target": 62.95455,
+  "upside": 0.24613123515439428,
+  "undervalued": true
+ },
+ "WFC": {
+  "pe": 11.575631,
+  "price": 82.65,
+  "target": 97.02083,
+  "upside": 0.1738757410768299,
+  "undervalued": true
+ },
+ "C": {
+  "pe": 11.800195,
+  "price": 121.07,
+  "target": 150.7143,
+  "upside": 0.2448525646320312,
+  "undervalued": true
+ },
+ "MMM": {
+  "pe": 25.792538,
+  "price": 172.81,
+  "target": 190.09444,
+  "upside": 0.100019906255425,
+  "undervalued": false
+ },
+ "HON": {
+  "pe": 10.871592,
+  "price": 219.28,
+  "target": 253.47826,
+  "upside": 0.15595704122582998,
+  "undervalued": true
+ },
+ "LLY": {
+  "pe": 42.93857,
+  "price": 1279.14,
+  "target": 1333.7213,
+  "upside": 0.04267030973935593,
+  "undervalued": false
+ },
+ "ABBV": {
+  "pe": 81.0113,
+  "price": 286.78,
+  "target": 284.7857,
+  "upside": -0.00695411116535305,
+  "undervalued": false
+ },
+ "AMGN": {
+  "pe": 27.61677,
+  "price": 444.63,
+  "target": 397.3231,
+  "upside": -0.10639610462631843,
+  "undervalued": false
+ },
+ "SPY": {
+  "pe": 24.299658,
+  "price": 765.37,
+  "target": null,
+  "upside": null,
+  "undervalued": false
+ },
+ "QQQ": {
+  "pe": 27.270658,
+  "price": 712.2,
+  "target": null,
+  "upside": null,
+  "undervalued": false
+ }
+}
