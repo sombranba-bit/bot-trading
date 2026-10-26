@@ -18,7 +18,7 @@ EVAL_DAYS = 90  # cada pronóstico se evalúa 90 días después
 
 
 def last_price(t):
-    return float(yf.download(t, period="5d", progress=False, auto_adjust=True)["Close"].squeeze().iloc[-1])
+    return float(yf.download(t, period="5d", progress=False, auto_adjust=True)["Close"].iloc[:, 0].iloc[-1])
 
 
 def read_csv(path):
@@ -60,13 +60,13 @@ def main() -> None:
         eq_rows.append({"fecha": today, "equity": equity})
     start = eq_rows[0]
     sim_ret = equity / float(start["equity"]) - 1
-    bench = yf.download(BENCHMARK, start=start["fecha"], progress=False, auto_adjust=True)["Close"].squeeze()
+    bench = yf.download(BENCHMARK, start=start["fecha"], progress=False, auto_adjust=True)["Close"].iloc[:, 0]
     bench_ret = float(bench.iloc[-1] / bench.iloc[0] - 1) if len(bench) > 1 else 0.0
 
     # 2. Pronósticos de hoy: acciones con al menos MIN_VOTES votos
     picks = []
     for t in UNIVERSE:
-        close = yf.download(t, period="2y", progress=False, auto_adjust=True)["Close"].squeeze()
+        close = yf.download(t, period="2y", progress=False, auto_adjust=True)["Close"].iloc[:, 0]
         n, _ = votes(close, screen.get(t, {}).get("undervalued", False))
         if n >= MIN_VOTES:
             picks.append({"ticker": t, "votos": n, "precio": round(float(close.iloc[-1]), 2)})
@@ -83,7 +83,7 @@ def main() -> None:
             now = last_price(r["ticker"])
             rets.append(now / float(r["precio"]) - 1)
         avg = sum(rets) / len(rets)
-        b = yf.download(BENCHMARK, start=old[0]["fecha"], progress=False, auto_adjust=True)["Close"].squeeze()
+        b = yf.download(BENCHMARK, start=old[0]["fecha"], progress=False, auto_adjust=True)["Close"].iloc[:, 0]
         b_ret = float(b.iloc[-1] / b.iloc[0] - 1)
         eval_txt = (f"Pronósticos de hace 90+ días ({len(old)}): rentabilidad media {avg:.1%} "
                     f"frente a {b_ret:.1%} del benchmark.")
