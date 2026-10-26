@@ -161,10 +161,10 @@
   "undervalued": true
  },
  "DIS": {
-  "pe": 22.76495,
-  "price": 110.41,
+  "pe": 22.762888,
+  "price": 110.4,
   "target": 126.58281,
-  "upside": 0.146479576125351,
+  "upside": 0.14658342391304346,
   "undervalued": false
  },
  "NKE": {
@@ -217,10 +217,10 @@
   "undervalued": true
  },
  "CVX": {
-  "pe": 22.3282,
-  "price": 231.99,
+  "pe": 22.330124,
+  "price": 232.01,
   "target": 232.5,
-  "upside": 0.0021983706194232955,
+  "upside": 0.002111977931985809,
   "undervalued": false
  },
  "BAC": {
@@ -238,17 +238,17 @@
   "undervalued": true
  },
  "C": {
-  "pe": 11.800195,
-  "price": 121.07,
+  "pe": 11.797271,
+  "price": 121.04,
   "target": 150.7143,
-  "upside": 0.2448525646320312,
+  "upside": 0.24516110376734956,
   "undervalued": true
  },
  "MMM": {
-  "pe": 25.792538,
-  "price": 172.81,
+  "pe": 25.789553,
+  "price": 172.79,
   "target": 190.09444,
-  "upside": 0.100019906255425,
+  "upside": 0.10014723074251974,
   "undervalued": false
  },
  "HON": {
@@ -266,10 +266,10 @@
   "undervalued": false
  },
  "ABBV": {
-  "pe": 81.0113,
-  "price": 286.78,
+  "pe": 81.0,
+  "price": 286.74,
   "target": 284.7857,
-  "upside": -0.00695411116535305,
+  "upside": -0.006815582060403114,
   "undervalued": false
  },
  "AMGN": {
