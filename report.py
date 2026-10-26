@@ -13,7 +13,7 @@ import yfinance as yf
 from alpaca.trading.client import TradingClient
 
 from config import BENCHMARK, CRYPTO, CRYPTO_ALPACA, MIN_VOTES, UNIVERSE
-from notify import telegram
+from notify import photo, telegram
 from page import render
 from signals import votes
 
@@ -21,6 +21,12 @@ ALPACA_TO_TICKER = {v.replace("/", ""): k for k, v in CRYPTO_ALPACA.items()}  # 
 SECTOR_ICON = {"Technology": "💻", "Financial Services": "🏦", "Healthcare": "💊", "Consumer Defensive": "🛒",
                "Consumer Cyclical": "🛍️", "Energy": "⛽", "Communication Services": "📡", "Industrials": "🏭",
                "Utilities": "💡", "Real Estate": "🏢", "Basic Materials": "🧱"}
+
+
+SECTOR_ES = {"Technology": "Tecnología", "Financial Services": "Financiero", "Healthcare": "Salud",
+             "Consumer Defensive": "Consumo básico", "Consumer Cyclical": "Consumo discrecional",
+             "Energy": "Energía", "Communication Services": "Comunicación", "Industrials": "Industria",
+             "Utilities": "Suministros", "Real Estate": "Inmobiliario", "Basic Materials": "Materiales"}
 
 
 def pick_line(p):
@@ -70,6 +76,37 @@ def info(t, screen):
             "target": s.get("target"), "upside": s.get("upside")}
 
 
+def chart(eq_rows, bench, positions, screen, path):
+    """Imagen para Telegram: rentabilidad frente a VWCE y reparto de la cartera por sector."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, (ax, bx) = plt.subplots(1, 2, figsize=(10, 4), gridspec_kw={"width_ratios": [2, 1]})
+    vals = [float(r["equity"]) for r in eq_rows]
+    ax.plot(pd.to_datetime([r["fecha"] for r in eq_rows]), [(v / vals[0] - 1) * 100 for v in vals],
+            color="#58a6ff", lw=2.5, label="Simulación")
+    if len(bench) > 1:
+        ax.plot(bench.index, (bench / bench.iloc[0] - 1) * 100, color="#8b98a5", lw=1.5, ls="--", label="VWCE")
+    ax.axhline(0, color="#30363d", lw=1)
+    ax.set_title("Rentabilidad desde el inicio (%)")
+    ax.legend(frameon=False)
+    ax.tick_params(axis="x", labelrotation=30)
+
+    sectors = {}
+    for p in positions:
+        s = "Cripto" if p["ticker"] in CRYPTO else (screen.get(p["ticker"], {}).get("sector") or "Otros")
+        s = SECTOR_ES.get(s, s)
+        sectors[s] = sectors.get(s, 0) + p["value"]
+    if sectors:
+        names, amounts = zip(*sorted(sectors.items(), key=lambda x: x[1]))
+        bx.barh(names, amounts, color="#3fb950")
+    bx.set_title("Cartera por sector (USD)")
+    fig.tight_layout()
+    fig.savefig(path, dpi=110)
+    plt.close(fig)
+
+
 def main() -> None:
     today = date.today().isoformat()
     screen = json.load(open("data/screen.json")) if os.path.exists("data/screen.json") else {}
@@ -89,6 +126,8 @@ def main() -> None:
     positions = [{"symbol": p.symbol, "ticker": ALPACA_TO_TICKER.get(p.symbol, p.symbol),
                   "value": float(p.market_value), "pl": float(p.unrealized_plpc)}
                  for p in trading.get_all_positions()]
+    os.makedirs("docs", exist_ok=True)
+    chart(eq_rows, bench, positions, screen, "docs/informe.png")
 
     # 2. Señales de todas las acciones; pronósticos = al menos MIN_VOTES votos
     grid, picks = [], []
@@ -146,6 +185,7 @@ def main() -> None:
         f.write(html)
     open("docs/.nojekyll", "w").close()
     telegram(text)
+    photo("docs/informe.png", "📉 Curva de la simulación frente a VWCE y reparto por sector")
     print(text)
 
 

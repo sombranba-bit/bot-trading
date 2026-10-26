@@ -34,3 +34,9 @@ jobs:
           mkdir -p data
           git add data
           if ! git diff --cached --quiet; then git commit -qm "Registro del bot" && git pull -q --rebase origin main && git push -q origin main; fi
+      - name: Avisar por Telegram si falla
+        if: failure()
+        run: curl -s "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" --data-urlencode "text=⚠️ Fallo en el bot. Registro: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
