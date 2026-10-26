@@ -36,7 +36,7 @@ def spark(vals, h=240):
     pts = " ".join(f"{i * w / (len(vals) - 1):.1f},{h - (v - lo) / span * (h - 30) - 15:.1f}"
                    for i, v in enumerate(vals))
     return (f'<svg viewBox="0 0 {w} {h}" preserveAspectRatio="none" class="chart" style="height:{h}px">'
-            f'<polyline points="{pts}" fill="none" stroke="var(--acc)" stroke-width="3" '
+            f'<polyline points="{pts}" pathLength="1" class="draw" fill="none" stroke="var(--acc)" stroke-width="3" '
             f'vector-effect="non-scaling-stroke"/></svg>')
 
 
@@ -140,10 +140,20 @@ h1{{margin:0;font-size:1.6rem}} .sub{{margin:2px 0 0;color:var(--muted)}}
 .pill.ok{{border-color:var(--pos);color:var(--pos)}} .pill.off{{border-color:var(--warn);color:var(--warn)}}
 .pill i{{width:8px;height:8px;border-radius:50%;background:var(--pos);animation:pulse 1.6s infinite}}
 @keyframes pulse{{0%{{opacity:1}}50%{{opacity:.25}}100%{{opacity:1}}}}
+@keyframes in{{from{{opacity:0;transform:translateY(8px)}}to{{opacity:1;transform:none}}}}
+@keyframes pop{{from{{opacity:0;transform:scale(.96)}}to{{opacity:1;transform:none}}}}
+@keyframes draw{{to{{stroke-dashoffset:0}}}}
+@keyframes flash{{0%{{background:rgba(88,166,255,.35)}}100%{{background:transparent}}}}
+.draw{{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.2s ease-out forwards}}
+.tick{{animation:flash .9s ease-out;border-radius:4px}}
+.cell{{transition:transform .2s ease,outline-color .2s}} .cell:hover{{transform:translateY(-2px)}}
+.pick{{transition:background .2s ease}} .pick:hover{{background:rgba(88,166,255,.06)}}
+.dlg[open]{{animation:pop .25s ease both}}
+@media (prefers-reduced-motion: reduce){{*,*::before,*::after{{animation:none!important;transition:none!important}}}}
 .tabs{{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);margin-bottom:20px}}
 .tabs button{{background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:10px 14px;font:inherit;cursor:pointer;white-space:nowrap}}
 .tabs button.on{{color:var(--txt);border-color:var(--acc)}}
-.tab{{display:none}} .tab.on{{display:block}}
+.tab{{display:none}} .tab.on{{display:block;animation:in .35s ease both}}
 .kpis{{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}}
 .kpi,.panel,.dlg{{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}}
 .kpi span{{color:var(--muted);font-size:.85rem}} .kpi strong{{display:block;font-size:1.8rem;margin-top:4px}}
@@ -241,6 +251,8 @@ async function precios(){{
       const d=j.p[e.dataset.p]; if(!d) return;
       e.textContent=d.p.toFixed(2)+' '+(d.v>=0?'▲ +':'▼ ')+d.v.toFixed(2)+'%';
       e.className='px '+(d.v>=0?'pos':'neg');
+      if(e.dataset.last&&e.dataset.last!==String(d.p)){{ e.classList.remove('tick'); void e.offsetWidth; e.classList.add('tick'); }}
+      e.dataset.last=d.p;
     }});
     document.getElementById('pxts').dataset.ts=j.ts;
     ago();
