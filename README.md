@@ -1,17 +1,36 @@
 # bot-trading
 
-Bot de trading en simulación (paper trading). Todavía no opera con dinero real.
+Bot de trading en **simulación (paper trading)**, con informe diario y pronósticos. No opera con dinero real.
 
-## Estado
+## Cómo funciona
 
-- [x] Estrategia de cruce de medias móviles (`strategy.py`)
-- [x] Backtest frente a comprar y mantener un ETF global (`backtest.py`)
-- [ ] Conexión con broker en modo paper (Alpaca)
-- [ ] Ejecución programada cada 30 minutos con GitHub Actions
-- [ ] Informe diario
+- **Tres señales** por activo, cada una con un voto: tendencia (medias móviles), momentum (12 meses) e infravaloración (P/E bajo y precio objetivo de analistas con margen).
+- Se compra si hay **al menos 2 votos** de 3. Se vende cuando baja de 2.
+- **Bot** (`bot.yml`): se ejecuta cada 30 minutos y ajusta las posiciones en Alpaca paper.
+- **Informe diario** (`daily.yml`): lunes a viernes, tras el cierre de EE. UU. Compara la simulación con el ETF VWCE, publica los pronósticos del día en `docs/index.md` y lo envía a Telegram si está configurado.
+- Cada pronóstico se evalúa 90 días después frente al benchmark.
 
-## Lanzar el backtest
+## Ficheros
 
-En GitHub: pestaña **Actions → backtest → Run workflow**. El resultado aparece en el log del trabajo.
+- `config.py`: universo, benchmark, criterios y tamaño de operación.
+- `signals.py`: las tres señales.
+- `screen.py`: screening de infravaloración (datos de Yahoo Finance, no oficiales).
+- `bot.py`: órdenes en paper trading.
+- `report.py`: informe y evaluación de pronósticos.
+- `strategy.py`, `backtest.py`: backtest de la estrategia de medias móviles.
 
-Hay que ejecutarlo en GitHub porque el entorno local no tiene acceso a los datos de mercado.
+## Secretos necesarios (Settings → Secrets and variables → Actions)
+
+- `ALPACA_API_KEY`, `ALPACA_API_SECRET`: claves de paper trading.
+- `TELEGRAM_TOKEN`, `TELEGRAM_CHAT_ID`: opcionales, para recibir el informe por Telegram.
+
+## Parar el bot
+
+Crear un fichero llamado `KILL_SWITCH` en la raíz del repo.
+
+## Limitaciones
+
+- Los datos de infravaloración vienen de Yahoo Finance y pueden faltar o cambiar sin aviso.
+- Los precios objetivo de analistas suelen ser optimistas.
+- El backtest de 2018 a 2026 ya se ha visto, así que cualquier ajuste basado en él está contaminado. Lo que cuenta de verdad es el rendimiento en paper trading a partir de ahora.
+- Esto no es asesoramiento financiero.
