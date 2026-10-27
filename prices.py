@@ -8,9 +8,9 @@ from datetime import datetime, timezone
 
 import yfinance as yf
 
-from config import CRYPTO, UNIVERSE
+from config import CORE, CRYPTO, UNIVERSE
 
-TICKERS = UNIVERSE + CRYPTO
+TICKERS = UNIVERSE + CORE + CRYPTO
 
 
 def summarize(s):

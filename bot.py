@@ -1,7 +1,6 @@
 """Bot en paper trading. Una ejecución = ajustar las posiciones una vez.
 
-Regla: el cesto (config.UNIVERSE + cripto) está siempre dentro, salvo las acciones que han caído más de
-config.DROP desde su máximo del último año. Esas se venden y vuelven a entrar al recuperarse.
+Regla: la cartera (config.CORE + cripto) se compra y se mantiene. Lo que haya en la cuenta fuera de ella se vende.
 
 Credenciales: ALPACA_API_KEY y ALPACA_API_SECRET (GitHub → Settings → Secrets).
 Parar: crear un fichero KILL_SWITCH en el repo.
@@ -16,7 +15,7 @@ from alpaca.trading.client import TradingClient
 from alpaca.trading.enums import OrderSide, TimeInForce
 from alpaca.trading.requests import MarketOrderRequest
 
-from config import CRYPTO, CRYPTO_ALPACA, DROP, MAX_INVESTED, MAX_POSITIONS, NOTIONAL, UNIVERSE
+from config import ASSETS, CORE, CRYPTO, CRYPTO_ALPACA, DROP, MAX_INVESTED, MAX_POSITIONS
 from notify import telegram
 from strategy import caida_grande
 
@@ -52,29 +51,33 @@ def main() -> None:
     market_open = trading.get_clock().is_open
     positions = trading.get_all_positions()
     held = {p.symbol for p in positions}
-    invested = sum(float(p.market_value) for p in positions)
+    values = {p.symbol: float(p.market_value) for p in positions}
+    invested = sum(values.values())
     acciones, avisos = [], []
 
     # Acciones solo con bolsa abierta; cripto siempre
-    tickers = (UNIVERSE if market_open else []) + CRYPTO
+    tickers = (CORE if market_open else []) + CRYPTO
     decisions = []
     for t in tickers:
         want = not bool(caida_grande(closes(t)).iloc[-1])  # dentro del cesto salvo caída grande
         symbol = CRYPTO_ALPACA.get(t, t)
         decisions.append((t, symbol, want, symbol.replace("/", "") in held))
+    if market_open:  # posiciones que ya no forman parte de la cartera (p. ej. las acciones de la estrategia anterior)
+        wanted = {d[1].replace("/", "") for d in decisions}
+        decisions += [(p.symbol, p.symbol, False, True) for p in positions if p.symbol not in wanted]
     decisions.sort(key=lambda d: d[2])  # primero las ventas (False), así liberan capacidad para las compras
 
     for t, symbol, want, is_in in decisions:
         key = symbol.replace("/", "")
         if want and not is_in:
-            if len(held) >= MAX_POSITIONS or invested + NOTIONAL > MAX_INVESTED:
+            if len(held) >= MAX_POSITIONS or invested + ASSETS[t] > MAX_INVESTED:
                 print("Tope alcanzado, no se compra", symbol)
                 continue
             tif = TimeInForce.GTC if t in CRYPTO else TimeInForce.DAY
             trading.submit_order(MarketOrderRequest(
-                symbol=symbol, notional=NOTIONAL, side=OrderSide.BUY, time_in_force=tif))
+                symbol=symbol, notional=ASSETS[t], side=OrderSide.BUY, time_in_force=tif))
             held.add(key)
-            invested += NOTIONAL
+            invested += ASSETS[t]
             log_trade(symbol, "COMPRA")
             acciones.append(f"COMPRA {symbol}")
             avisos.append(f"🟢 <b>COMPRA</b> {symbol}")
@@ -82,10 +85,10 @@ def main() -> None:
         elif not want and is_in:
             trading.close_position(key)
             held.discard(key)
-            invested -= NOTIONAL  # aproximación: el importe real de la venta puede diferir un poco
+            invested -= values.get(key, 0)
             log_trade(symbol, "VENTA")
             acciones.append(f"VENTA {symbol}")
-            avisos.append(f"🔴 <b>VENTA</b> {symbol} · caída de más del {DROP:.0%} desde máximo")
+            avisos.append(f"🔴 <b>VENTA</b> {symbol} · fuera de la cartera")
             print("VENTA", symbol)
 
     if avisos:  # un solo mensaje por ejecución, para no inundar el grupo en la primera carga

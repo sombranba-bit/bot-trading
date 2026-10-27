@@ -508,7 +508,7 @@ def status_pill(st):
 def activity(r):
     compra = r["accion"] == "COMPRA"
     color = "var(--ok)" if compra else "var(--glow)"
-    texto = "Entra en el cesto" if compra else "Sale: caída de más de un 20 % desde su máximo"
+    texto = "Entra en la cartera" if compra else "Sale de la cartera"
     return (f'<div class="tl-item stg" style="--c:{color}"><div><b>{"Compra" if compra else "Venta"} {escape(r["simbolo"])}</b>'
             f'<div class="meta">{texto}</div></div>'
             f'<span class="when">{escape(r["fecha"][:16].replace("T", " "))}</span></div>')
@@ -521,7 +521,7 @@ def page(title, body, today, sidebar=""):
 <title>{title}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<meta name="description" content="Aldana Trading, bot de paper trading: cesto de acciones con filtro de caída, pronósticos y backtest frente a VWCE. Actualizado {today}.">
+<meta name="description" content="Aldana Trading, bot de paper trading: VT y bitcoin, comparado con VWCE, con pronósticos y backtest. Actualizado {today}.">
 <style>{CSS}</style></head>
 <body>
 <div class="shell">
@@ -607,7 +607,7 @@ def render(ctx) -> str:
     {gauge(ctx["sim_ret"], "Simulación desde " + ctx["start"])}
     <div class="txt"><span class="label">Rentabilidad de la simulación</span>
       <h2 style="font-size:22px;margin:6px 0 0">{pct(ctx["sim_ret"])} frente a {pct(ctx["bench_ret"])} de VWCE</h2>
-      <p>Cesto de 42 acciones y bitcoin con filtro de caída. Comparado con el ETF global VWCE desde el mismo día.</p></div>
+      <p>VT (mercado mundial) y bitcoin, comprados y mantenidos. Comparado con el ETF global VWCE desde el mismo día.</p></div>
   </div>
   <div class="kpis">
     {kpi("Simulación", pct(ctx["sim_ret"]), cls(ctx["sim_ret"]), ctx["sim_ret"] * 100, "%", "chart")}
@@ -660,24 +660,24 @@ def inicio(ctx) -> str:
         ("resumen", "Resumen", "grid", "Rentabilidad, cartera y comparativa frente a VWCE.", f"{pct(ctx['sim_ret'])} desde {ctx['start']}"),
         ("pronosticos", "Pronósticos", "target", "Acciones con al menos 2 de 3 señales. Informativo.", f"{len(ctx['picks'])} hoy"),
         ("cartera", "Cartera", "wallet", "Posiciones abiertas y su rentabilidad.", "Ver posiciones"),
-        ("senales", "Señales", "signal", "Mapa de las 42 acciones y bitcoin.", "Mapa completo"),
+        ("senales", "Señales", "signal", "Mapa de las 42 acciones de referencia y bitcoin.", "Mapa completo"),
         ("actividad", "Actividad", "activity", "Últimas compras y ventas del bot.", "Línea de tiempo"),
         ("evaluacion", "Evaluación", "flask", "Resultados de los pronósticos y backtest.", "Frente a VWCE"),
     ]
     nav = "".join(f"""<button class="nc" data-go="{k}" data-reveal>
   <span class="ico">{icon(ic)}</span><h3>{title}</h3><p>{desc_}</p><span class="tag">{tag}</span>
   <span style="position:absolute;right:20px;bottom:20px;color:var(--mut)">{icon("arrow")}</span></button>""" for k, title, ic, desc_, tag in cards)
-    steps = [("01", "Cesto", "Mantiene las 42 acciones y bitcoin, con el mismo importe cada una."),
-             ("02", "Filtro de caída", "Si una acción cae más de un 20 % desde su máximo anual, se vende y vuelve a entrar al recuperarse."),
+    steps = [("01", "Cartera", "Compra VT y bitcoin, y los mantiene sin vender por caídas."),
+             ("02", "Sin filtro", "Antes vendía lo que caía más de un 20 %. Ahora solo sale de la cartera lo que no esté en ella."),
              ("03", "Informe", "Cada día, la simulación frente a VWCE, y un aviso en Telegram por cada movimiento.")]
     step_html = "".join(f'<div class="step" data-reveal><span class="n">{n}</span><h3>{t}</h3><p>{d}</p></div>' for n, t, d in steps)
     return f"""<section class="view" id="inicio">
 <section class="hero">
   <span class="blob b1"></span><span class="blob b2"></span>
   <div>
-    <span class="label">Cesto con filtro de caídas</span>
-    <h1 style="margin-top:12px"><span class="grad">Aldana Trading</span><br>con filtro de caídas</h1>
-    <p>Simulación sobre 42 acciones y bitcoin. Un filtro vende lo que cae más de un 20 % desde su máximo anual, y todo se compara con el ETF global VWCE.</p>
+    <span class="label">Comprar y mantener</span>
+    <h1 style="margin-top:12px"><span class="grad">Aldana Trading</span><br>VT y bitcoin</h1>
+    <p>Simulación con VT (mercado mundial) y bitcoin, comparada con el ETF global VWCE.</p>
     <div class="cta">
       <a class="btn main" href="#resumen">Abrir el panel {icon("arrow")}</a>
       <a class="btn" href="#evaluacion">Ver el backtest {icon("arrow")}</a>
