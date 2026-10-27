@@ -1,4 +1,7 @@
-"""Bot en paper trading. Una ejecución = calcular votos y ajustar posiciones una vez.
+"""Bot en paper trading. Una ejecución = ajustar las posiciones una vez.
+
+Regla: el cesto (config.UNIVERSE + cripto) está siempre dentro, salvo las acciones que han caído más de
+config.DROP desde su máximo del último año. Esas se venden y vuelven a entrar al recuperarse.
 
 Credenciales: ALPACA_API_KEY y ALPACA_API_SECRET (GitHub → Settings → Secrets).
 Parar: crear un fichero KILL_SWITCH en el repo.
@@ -13,23 +16,23 @@ from alpaca.trading.client import TradingClient
 from alpaca.trading.enums import OrderSide, TimeInForce
 from alpaca.trading.requests import MarketOrderRequest
 
-from config import CRYPTO, CRYPTO_ALPACA, MAX_INVESTED, MAX_POSITIONS, MIN_VOTES, NOTIONAL, UNIVERSE
+from config import CRYPTO, CRYPTO_ALPACA, DROP, MAX_INVESTED, MAX_POSITIONS, NOTIONAL, UNIVERSE
 from notify import telegram
-from signals import votes
+from strategy import caida_grande
 
 
 def closes(ticker):
     return yf.download(ticker, period="2y", progress=False, auto_adjust=True)["Close"].squeeze()
 
 
-def log_trade(symbol, action, n):
+def log_trade(symbol, action):
     os.makedirs("data", exist_ok=True)
     new = not os.path.exists("data/trades.csv")
     with open("data/trades.csv", "a", newline="") as f:
         w = csv.writer(f)
         if new:
             w.writerow(["fecha", "simbolo", "accion", "votos"])
-        w.writerow([datetime.now(timezone.utc).isoformat(timespec="minutes"), symbol, action, n])
+        w.writerow([datetime.now(timezone.utc).isoformat(timespec="minutes"), symbol, action, ""])
 
 
 def save_status(market_open, acciones, parado=False):
@@ -45,27 +48,23 @@ def main() -> None:
         save_status(False, [], parado=True)
         return
 
-    screen = {}
-    if os.path.exists("data/screen.json"):
-        screen = json.load(open("data/screen.json"))
-
     trading = TradingClient(os.environ["ALPACA_API_KEY"], os.environ["ALPACA_API_SECRET"], paper=True)
     market_open = trading.get_clock().is_open
     positions = trading.get_all_positions()
     held = {p.symbol for p in positions}
     invested = sum(float(p.market_value) for p in positions)
-    acciones = []
+    acciones, avisos = [], []
 
     # Acciones solo con bolsa abierta; cripto siempre
     tickers = (UNIVERSE if market_open else []) + CRYPTO
     decisions = []
     for t in tickers:
-        n, _ = votes(closes(t), screen.get(t, {}).get("undervalued", False))
+        want = not bool(caida_grande(closes(t)).iloc[-1])  # dentro del cesto salvo caída grande
         symbol = CRYPTO_ALPACA.get(t, t)
-        decisions.append((t, symbol, n, n >= MIN_VOTES, symbol.replace("/", "") in held))
-    decisions.sort(key=lambda d: d[3])  # primero las ventas (False), así liberan capacidad para las compras
+        decisions.append((t, symbol, want, symbol.replace("/", "") in held))
+    decisions.sort(key=lambda d: d[2])  # primero las ventas (False), así liberan capacidad para las compras
 
-    for t, symbol, n, want, is_in in decisions:
+    for t, symbol, want, is_in in decisions:
         key = symbol.replace("/", "")
         if want and not is_in:
             if len(held) >= MAX_POSITIONS or invested + NOTIONAL > MAX_INVESTED:
@@ -76,19 +75,21 @@ def main() -> None:
                 symbol=symbol, notional=NOTIONAL, side=OrderSide.BUY, time_in_force=tif))
             held.add(key)
             invested += NOTIONAL
-            log_trade(symbol, "COMPRA", n)
+            log_trade(symbol, "COMPRA")
             acciones.append(f"COMPRA {symbol}")
-            telegram(f"🟢 <b>COMPRA</b> {symbol}\n🎯 {n}/3 señales · <i>simulación</i>")
-            print("COMPRA", symbol, n)
+            avisos.append(f"🟢 <b>COMPRA</b> {symbol}")
+            print("COMPRA", symbol)
         elif not want and is_in:
             trading.close_position(key)
             held.discard(key)
             invested -= NOTIONAL  # aproximación: el importe real de la venta puede diferir un poco
-            log_trade(symbol, "VENTA", n)
+            log_trade(symbol, "VENTA")
             acciones.append(f"VENTA {symbol}")
-            telegram(f"🔴 <b>VENTA</b> {symbol}\n🎯 {n}/3 señales · <i>simulación</i>")
-            print("VENTA", symbol, n)
+            avisos.append(f"🔴 <b>VENTA</b> {symbol} · caída de más del {DROP:.0%} desde máximo")
+            print("VENTA", symbol)
 
+    if avisos:  # un solo mensaje por ejecución, para no inundar el grupo en la primera carga
+        telegram("🤖 <b>Movimientos del bot</b> · <i>simulación</i>\n\n" + "\n".join(avisos))
     save_status(market_open, acciones)
 
 

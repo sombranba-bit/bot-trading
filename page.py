@@ -232,7 +232,7 @@ footer{{margin-top:24px;color:var(--muted);font-size:.8rem}}
 <section class="tab" id="pronosticos"><div class="panel"><h2>Pronósticos de hoy</h2>{picks}</div></section>
 <section class="tab" id="cartera"><div class="panel"><h2>Cartera</h2>{positions}</div></section>
 <section class="tab" id="senales"><div class="panel"><h2>Señales por activo</h2><div class="heat">{heat}</div>
-  <p class="legend muted">Número de señales a favor (de 3). Con 2 o más, el bot compra. Pulsa una acción para ver su ficha.</p></div></section>
+  <p class="legend muted">Número de señales a favor (de 3), solo informativo: el bot opera con el cesto y sale de una acción si cae más de un 20 % desde su máximo. Pulsa una acción para ver su ficha.</p></div></section>
 <section class="tab" id="actividad"><div class="panel"><h2>Actividad reciente</h2>{trades}</div></section>
 <section class="tab" id="evaluacion"><div class="panel"><h2>Evaluación de pronósticos</h2>
   <p>{escape(ctx["eval_txt"])}</p>

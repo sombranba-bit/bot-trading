@@ -16,7 +16,7 @@ import pandas as pd
 import yfinance as yf
 
 from config import BENCHMARK, UNIVERSE
-from strategy import signal
+from strategy import caida_grande, signal
 
 START = "2018-01-01"
 FEE = 0.001  # 0,1 % por cambio de posición, para no ser optimistas
@@ -37,15 +37,20 @@ def main() -> None:
     ret = close.pct_change().fillna(0)
     pos = close.apply(signal)
     trades = pos.diff().abs().fillna(0)
+    # Propuesta: cesto completo y se sale solo de las acciones con caída grande (ver config.DROP)
+    pos_f = (~close.apply(caida_grande)).astype(int).shift(1).fillna(0)
+    trades_f = pos_f.diff().abs().fillna(0)
     scenarios = {
         "Tendencia por activo": (pos * ret - trades * FEE).mean(axis=1),  # cartera igual ponderada rebalanceada a diario
         "Comprar y mantener (mismo cesto)": ret.mean(axis=1),
+        "Cesto con filtro de caída (propuesta)": (pos_f * ret - trades_f * FEE).mean(axis=1),
         "VWCE comprar y mantener": bench.pct_change().fillna(0).reindex(close.index).fillna(0),
     }
 
     rows = []
+    trades_by = {"Tendencia por activo": trades, "Cesto con filtro de caída (propuesta)": trades_f}
     for name, r in scenarios.items():
-        n_ops = int(trades.sum().sum()) if name.startswith("Tendencia") else 0
+        n_ops = int(trades_by[name].sum().sum()) if name in trades_by else 0
         rows.append({"escenario": name, **metrics(r), "operaciones": n_ops})
     df = pd.DataFrame(rows)
     os.makedirs("data", exist_ok=True)

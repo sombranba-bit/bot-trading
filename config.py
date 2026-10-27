@@ -17,8 +17,9 @@ BENCHMARK = "VWCE.DE"
 
 NOTIONAL = 1000   # dólares simulados por activo
 MIN_VOTES = 2     # comprar si al menos 2 de las 3 señales están a favor
-MAX_POSITIONS = 15      # tope de posiciones abiertas a la vez
-MAX_INVESTED = 15000    # tope de capital invertido (USD simulados)
+DROP = 0.20             # caída desde el máximo de 1 año que saca una acción del cesto
+MAX_POSITIONS = 50      # tope de posiciones abiertas a la vez (cesto de 42 más margen)
+MAX_INVESTED = 50000    # tope de capital invertido (USD simulados)
 COST = 0.002            # comisión + deslizamiento, ida y vuelta, al evaluar pronósticos
 MIN_SAMPLE = 30         # pronósticos mínimos por criterio para sacar conclusiones
 

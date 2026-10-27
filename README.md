@@ -4,9 +4,10 @@ Bot de trading en **simulación (paper trading)**, con informe diario y pronóst
 
 ## Cómo funciona
 
-- **Tres señales** por activo, cada una con un voto: tendencia (medias móviles), momentum (12 meses) e infravaloración (P/E bajo y precio objetivo de analistas con margen).
-- Se compra si hay **al menos 2 votos** de 3. Se vende cuando baja de 2.
-- **Bot** (`bot.yml`): se ejecuta cada 30 minutos y ajusta las posiciones en Alpaca paper.
+- **Cesto**: el bot mantiene todas las acciones del universo (42) y cripto, con el mismo importe cada una.
+- **Filtro de caída**: si una acción cae más de un 20 % desde su máximo del último año, se vende. Vuelve a entrar al recuperarse.
+- **Pronósticos** (informativos, no operan): tres señales por activo (tendencia, momentum e infravaloración). Se publican en el panel y se evalúan a 90 días.
+- **Bot** (`bot.yml`): se ejecuta cada 30 minutos y ajusta las posiciones en Alpaca paper. Un solo aviso de Telegram por ejecución con los movimientos.
 - **Informe diario** (`daily.yml`): lunes a viernes, tras el cierre de EE. UU. Compara la simulación con el ETF VWCE, publica los pronósticos del día en `docs/index.html` y lo envía a Telegram si está configurado.
 - Cada acción se registra la primera vez que cumple 2 y 3 votos, y se evalúa a 90 días con el exceso frente a VWCE desde su fecha.
 
@@ -18,7 +19,8 @@ Bot de trading en **simulación (paper trading)**, con informe diario y pronóst
 - `bot.py`: órdenes en paper trading.
 - `report.py`: datos del informe y evaluación de pronósticos.
 - `page.py`: diseño de la página del informe.
-- `strategy.py`, `backtest.py`: backtest de la estrategia de medias móviles.
+- `strategy.py`: filtro de caída y medias móviles (esta última solo para el backtest).
+- `backtest.py`: compara el cesto con filtro, el cesto sin filtro, la tendencia por activo y VWCE (`data/backtest.csv`).
 
 ## Secretos necesarios (Settings → Secrets and variables → Actions)
 
