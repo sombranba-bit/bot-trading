@@ -14,7 +14,7 @@ from alpaca.trading.client import TradingClient
 
 from config import BENCHMARK, COST, CRYPTO, CRYPTO_ALPACA, MIN_SAMPLE, MIN_VOTES, UNIVERSE
 from notify import photo, telegram
-from page import SECTOR_ES, landing, render
+from page import SECTOR_ES, render
 from signals import votes
 
 ALPACA_TO_TICKER = {v.replace("/", ""): k for k, v in CRYPTO_ALPACA.items()}  # p. ej. BTCUSD -> BTC-USD
@@ -115,7 +115,7 @@ def weekly(eq_rows, trades, grid, today):
         f"🔁 <b>Operaciones</b>  {len(ops)}", "",
         "🔥 <b>Acciones con más señales</b>",
         *[f"{SECTOR_ICON.get(f['info']['sector'], '📦')} <b>{escape(t)}</b> · {f['n']}/3" for t, f in top], "",
-        '🔗 <a href="https://sombranba-bit.github.io/bot-trading/panel.html">Ver el panel completo</a>',
+        '🔗 <a href="https://sombranba-bit.github.io/bot-trading/">Ver el panel completo</a>',
     ])
 
 
@@ -187,7 +187,7 @@ def main() -> None:
         *([f"… y {len(picks) - 12} más"] if len(picks) > 12 else []),
         *([] if picks else ["Ninguno hoy"]), "",
         f"🧪 <b>Evaluación</b>", escape(eval_txt), "",
-        '🔗 <a href="https://sombranba-bit.github.io/bot-trading/panel.html">Ver el panel completo</a>',
+        '🔗 <a href="https://sombranba-bit.github.io/bot-trading/">Ver el panel completo</a>',
     ])
     ctx = {
         "today": today, "start": start["fecha"], "sim_ret": sim_ret, "bench_ret": bench_ret,
@@ -196,10 +196,8 @@ def main() -> None:
         "backtest": read_csv("data/backtest.csv"),
     }
     os.makedirs("docs", exist_ok=True)
-    with open("docs/panel.html", "w") as f:
-        f.write(render(ctx))
     with open("docs/index.html", "w") as f:
-        f.write(landing(ctx))
+        f.write(render(ctx))
     open("docs/.nojekyll", "w").close()
     telegram(text)
     photo("docs/informe.png", "📉 Curva de la simulación frente a VWCE y reparto por sector")

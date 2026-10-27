@@ -258,6 +258,7 @@ display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:36px;align-
 .btn:hover{transform:translateY(-2px);border-color:var(--acc)}
 .btn .ic{width:18px;height:18px;transition:transform .25s}.btn:hover .ic{transform:translateX(3px)}
 .nav-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:20px}
+button.nc{width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer}
 .nc{display:block;position:relative;overflow:hidden;padding:22px;border-radius:18px;border:1px solid var(--rule);background:var(--card);box-shadow:var(--shadow);
 transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .3s,box-shadow .35s;border-top:3px solid var(--acc)}
 .nc:nth-child(2){border-top-color:var(--acc2)}.nc:nth-child(3){border-top-color:var(--glow)}.nc:nth-child(4){border-top-color:var(--rest)}.nc:nth-child(5){border-top-color:var(--av)}.nc:nth-child(6){border-top-color:var(--work)}
@@ -354,7 +355,9 @@ document.addEventListener('pointermove',e=>{
 $$('.logo img').forEach(img=>{if(img.complete&&img.naturalWidth>0)img.classList.add('ok');else img.addEventListener('load',()=>img.classList.add('ok'));});
 if($('.nav button')){
   $$('.nav button').forEach(b=>b.onclick=()=>show(b.dataset.t));
-  show(location.hash.slice(1)||'resumen');
+  show(location.hash.slice(1)||'inicio');
+  addEventListener('hashchange',()=>show(location.hash.slice(1)));
+  $$('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
 }
 if('IntersectionObserver' in window&&!reduce){
   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.12});
@@ -535,17 +538,16 @@ def page(title, body, today, sidebar=""):
 """
 
 
-def side_nav(panel=True):
-    """Menú lateral: en el panel cambia de vista; en la portada enlaza al panel."""
-    links = "".join(
-        (f'<button data-t="{k}">' if panel else f'<a href="panel.html#{k}">')
-        + f'{icon(ic)}<span>{v}</span><em>{i:02d}</em>' + ("</button>" if panel else "</a>")
+def side_nav():
+    """Menú lateral: Inicio y las secciones, todo en una página."""
+    home = f'<button data-t="inicio">{icon("home")}<span>Inicio</span></button>'
+    links = home + "".join(
+        f'<button data-t="{k}">{icon(ic)}<span>{v}</span><em>{i:02d}</em></button>'
         for i, (k, v, ic) in enumerate(SECTIONS, 1))
     return f"""<aside class="side">
-  <a class="brand" href="index.html">{BRAND_MARK}<div><b>Bot de trading</b><small>Paper trading</small></div></a>
-  <nav class="nav"><span class="label">Panel</span>{links}</nav>
+  <a class="brand" href="#inicio">{BRAND_MARK}<div><b>Bot de trading</b><small>Paper trading</small></div></a>
+  <nav class="nav"><span class="label">Secciones</span>{links}</nav>
   <div class="side-foot">
-    <a href="index.html">{icon("home")}<span>Inicio</span></a>
     <div class="legend-c"><span><i style="background:var(--acc)"></i>Señal cumplida</span>
     <span><i style="background:var(--ok)"></i>Compra</span><span><i style="background:var(--glow)"></i>Venta o caída</span></div>
   </div>
@@ -594,10 +596,12 @@ def render(ctx) -> str:
     tape = ""  # la cinta se rellena con precios.json al cargar
     body = f"""
 <header class="top">
-  <div><h1 id="titulo">Resumen</h1><p>Paper trading · informe del {ctx["today"]}</p></div>
+  <div><h1 id="titulo">Inicio</h1><p>Paper trading · informe del {ctx["today"]}</p></div>
   <div class="pills">{status_pill(ctx["status"])}<span class="pill">Precios <b id="pxts">cargando…</b></span></div>
 </header>
 <div class="tapewrap"><div class="tape" id="tape">{tape}<span class="it">Cargando precios…</span></div></div>
+
+{inicio(ctx)}
 
 <section class="view" id="resumen">
   {featured(ctx["picks"][0] if ctx["picks"] else None)}
@@ -649,11 +653,11 @@ def render(ctx) -> str:
 </section>
 
 {dialogs}"""
-    return page("Panel · Bot de trading", body, ctx["today"], side_nav())
+    return page("Bot de trading", body, ctx["today"], side_nav())
 
 
-def landing(ctx) -> str:
-    """Portada: presentación y acceso a todas las secciones del panel."""
+def inicio(ctx) -> str:
+    """Vista de inicio: presentación y acceso a cada sección."""
     cards = [
         ("resumen", "Resumen", "grid", "Rentabilidad, cartera y comparativa frente a VWCE.", f"{pct(ctx['sim_ret'])} desde {ctx['start']}"),
         ("pronosticos", "Pronósticos", "target", "Acciones con al menos 2 de 3 señales. Informativo.", f"{len(ctx['picks'])} hoy"),
@@ -662,20 +666,14 @@ def landing(ctx) -> str:
         ("actividad", "Actividad", "activity", "Últimas compras y ventas del bot.", "Línea de tiempo"),
         ("evaluacion", "Evaluación", "flask", "Resultados de los pronósticos y backtest.", "Frente a VWCE"),
     ]
-    nav = "".join(f"""<a class="nc" href="panel.html#{k}" data-reveal>
+    nav = "".join(f"""<button class="nc" data-go="{k}" data-reveal>
   <span class="ico">{icon(ic)}</span><h3>{title}</h3><p>{desc_}</p><span class="tag">{tag}</span>
-  <span style="position:absolute;right:20px;bottom:20px;color:var(--mut)">{icon("arrow")}</span></a>""" for k, title, ic, desc_, tag in cards)
+  <span style="position:absolute;right:20px;bottom:20px;color:var(--mut)">{icon("arrow")}</span></button>""" for k, title, ic, desc_, tag in cards)
     steps = [("01", "Cesto", "Mantiene las 42 acciones y bitcoin, con el mismo importe cada una."),
              ("02", "Filtro de caída", "Si una acción cae más de un 20 % desde su máximo anual, se vende y vuelve a entrar al recuperarse."),
              ("03", "Informe", "Cada día, la simulación frente a VWCE, y un aviso en Telegram por cada movimiento.")]
     step_html = "".join(f'<div class="step" data-reveal><span class="n">{n}</span><h3>{t}</h3><p>{d}</p></div>' for n, t, d in steps)
-    body = f"""
-<header class="top">
-  <div><h1>Bot de trading</h1><p>Paper trading · simulación con dinero ficticio</p></div>
-  <div class="pills">{status_pill(ctx["status"])}</div>
-</header>
-<div class="tapewrap"><div class="tape" id="tape"><span class="it">Cargando precios…</span></div></div>
-
+    return f"""<section class="view" id="inicio">
 <section class="hero">
   <span class="blob b1"></span><span class="blob b2"></span>
   <div>
@@ -683,17 +681,15 @@ def landing(ctx) -> str:
     <h1 style="margin-top:12px"><span class="grad">Bot de trading</span><br>con filtro de caídas</h1>
     <p>Simulación sobre 42 acciones y bitcoin. Un filtro vende lo que cae más de un 20 % desde su máximo anual, y todo se compara con el ETF global VWCE.</p>
     <div class="cta">
-      <a class="btn main" href="panel.html">Abrir el panel {icon("arrow")}</a>
-      <a class="btn" href="panel.html#evaluacion">Ver el backtest {icon("arrow")}</a>
+      <a class="btn main" href="#resumen">Abrir el panel {icon("arrow")}</a>
+      <a class="btn" href="#evaluacion">Ver el backtest {icon("arrow")}</a>
     </div>
   </div>
-  <div class="hero-gauge">{gauge(ctx["sim_ret"], "Simulación desde " + ctx["start"])}</div>
+  <div class="hero-gauge">{gauge(ctx["sim_ret"], "Desde " + ctx["start"])}</div>
 </section>
-
 <div class="label sec-title">Acceso</div>
 <div class="nav-cards">{nav}</div>
-
 <div class="label sec-title">Cómo funciona</div>
 <div class="steps">{step_html}</div>
+</section>
 """
-    return page("Bot de trading", body, ctx["today"], side_nav(False))
