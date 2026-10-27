@@ -1,4 +1,5 @@
 """Páginas del bot para GitHub Pages: portada (index.html) y panel (panel.html). Sin dependencias: HTML, CSS y JS a mano."""
+import math
 from html import escape
 from urllib.parse import urlparse
 
@@ -40,14 +41,16 @@ ICONS = {
 }
 
 CSS = """
-:root{--bg:#05080f;--card:rgba(18,26,42,.62);--line:rgba(148,163,184,.14);--txt:#e8eef7;--muted:#8b98ab;
---pos:#34d399;--neg:#fb7185;--warn:#fbbf24;--a1:#7dd3fc;--a2:#a78bfa;--acc:#7dd3fc}
-@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#f4f6fb;--card:rgba(255,255,255,.8);--line:rgba(15,23,42,.1);
---txt:#0f172a;--muted:#5b6778;--pos:#059669;--neg:#e11d48;--warn:#b45309;--acc:#2563eb;--a1:#2563eb;--a2:#7c3aed}}
+:root{--bg:#0b0b0b;--card:rgba(17,17,17,.78);--line:rgba(255,255,255,.08);--txt:#f4f4f2;--muted:#8d8d8b;
+--pos:#5ccf8e;--neg:#f08a7d;--warn:#e6b45a;--a1:#ffb000;--a2:#ff8a3d;--acc:#ffb000}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#f6f5f1;--card:rgba(255,255,255,.85);--line:rgba(0,0,0,.09);
+--txt:#161513;--muted:#6b675e;--pos:#2f8f5b;--neg:#c2452f;--warn:#93600a;--acc:#b86e00;--a1:#b86e00;--a2:#d9480f}}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;min-height:100vh;color:var(--txt);background:var(--bg);font:15px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:hidden;
-background-image:radial-gradient(1100px 620px at 8% -12%,rgba(125,211,252,.14),transparent 60%),radial-gradient(900px 520px at 100% 4%,rgba(167,139,250,.13),transparent 60%);background-attachment:fixed}
+background-image:radial-gradient(circle,rgba(255,255,255,.07) 1px,transparent 1.3px),radial-gradient(900px 520px at 50% -18%,rgba(255,176,0,.11),transparent 65%);background-size:26px 26px,100% 100%;background-attachment:fixed}
+.serif{font-family:"Playfair Display",Georgia,serif;font-style:italic;font-weight:400;letter-spacing:-.01em}
+.label{font:600 .68rem "JetBrains Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 a{color:inherit;text-decoration:none}
 .wrap{max-width:1180px;margin:0 auto;padding:22px 26px 40px}
 .mono,.px,.kpi strong,.big-px,.tape{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
@@ -113,8 +116,8 @@ h2 .ic{color:var(--acc)}
 .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:8px;background:var(--muted)}
 .dot.c{background:var(--pos)} .dot.v{background:var(--neg)}
 /* logos y sectores */
-.logo{position:relative;width:54px;height:54px;flex:none;border-radius:15px;display:grid;place-items:center;overflow:hidden;color:#fff;background:linear-gradient(135deg,hsl(var(--h) 85% 62%),hsl(calc(var(--h) + 48) 80% 42%));box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 6px 16px rgba(0,0,0,.25)}
-.logo span{font:800 .8rem "JetBrains Mono",ui-monospace,monospace;letter-spacing:-.02em;text-shadow:0 1px 2px rgba(0,0,0,.3)}
+.logo{position:relative;width:54px;height:54px;flex:none;border-radius:14px;display:grid;place-items:center;overflow:hidden;color:var(--txt);background:#151515;border:1px solid var(--line);box-shadow:inset 0 -2px 0 var(--acc)}
+.logo span{font:700 .82rem "JetBrains Mono",ui-monospace,monospace;letter-spacing:.02em}
 .logo img{position:absolute;inset:0;width:100%;height:100%;background:#fff;object-fit:contain;padding:9px;opacity:0;transition:opacity .5s}
 .logo img.ok{opacity:1}
 .logo.sm{width:36px;height:36px;border-radius:11px} .logo.sm span{font-size:.62rem}
@@ -160,8 +163,20 @@ footer{margin-top:28px;color:var(--muted);font-size:.8rem;text-align:center}
 /* portada */
 .hero{position:relative;overflow:hidden;border-radius:26px;padding:56px 40px;border:1px solid var(--line);background:var(--card);animation:in .7s ease both}
 .blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.4;pointer-events:none;animation:float 14s ease-in-out infinite}
-.blob.b1{width:340px;height:340px;background:#7dd3fc;top:-120px;left:-80px}
-.blob.b2{width:300px;height:300px;background:#a78bfa;bottom:-130px;right:-60px;animation-duration:17s}
+.blob.b1{width:340px;height:340px;background:#ffb000;top:-140px;left:-90px;opacity:.16}
+.blob.b2{width:300px;height:300px;background:#ff8a3d;bottom:-150px;right:-40px;animation-duration:17s;opacity:.12}
+.hero{display:flex;flex-wrap:wrap;gap:28px;align-items:center;justify-content:space-between}
+.hero-text{position:relative;max-width:640px}
+.hero-gauge{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px}
+.gauge{display:flex;flex-direction:column;align-items:center;gap:6px;width:200px}
+.gauge svg{width:100%;overflow:visible;animation:in .8s var(--ease,cubic-bezier(.22,1,.36,1)) both}
+.gauge .arc{fill:none;stroke:var(--line);stroke-width:5;stroke-linecap:round}
+.gauge .ticks line{stroke:var(--muted);stroke-width:1.2;opacity:.6}
+.gauge .needle{transform-origin:50px 50px;transform:rotate(var(--a));animation:sweep 1.8s cubic-bezier(.22,1,.36,1) .25s both}
+.gauge .needle line{stroke:var(--acc);stroke-width:2.4;stroke-linecap:round}
+.gauge .hub{fill:var(--acc)}
+.gauge .gv{font:700 1.5rem "JetBrains Mono",monospace;letter-spacing:-.02em}
+@keyframes sweep{from{transform:rotate(-135deg)}}
 .hero h1{position:relative;margin:0;font-size:clamp(2.2rem,5.5vw,3.8rem);line-height:1.05;letter-spacing:-.03em}
 .hero p{position:relative;max-width:620px;color:var(--muted);font-size:1.05rem;margin:16px 0 26px}
 .cta{position:relative;display:flex;flex-wrap:wrap;gap:12px}
@@ -266,6 +281,20 @@ BRAND_MARK = ('<svg class="mark" viewBox="0 0 40 40" aria-hidden="true"><defs><l
 def icon(name, cls="ic"):
     return (f'<svg class="{cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" '
             f'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{ICONS.get(name, ICONS["dot"])}</svg>')
+
+
+def gauge(v, label):
+    """Tacómetro: la aguja va de -20 % (izquierda) a +20 % (derecha) y se mueve al cargar la página."""
+    a = max(-1, min(1, v / 0.2)) * 135
+    ticks = "".join(
+        f'<line x1="{50 + 40 * math.sin(math.radians(k)):.1f}" y1="{50 - 40 * math.cos(math.radians(k)):.1f}" '
+        f'x2="{50 + 46 * math.sin(math.radians(k)):.1f}" y2="{50 - 46 * math.cos(math.radians(k)):.1f}"/>'
+        for k in range(-135, 136, 27))
+    return (f'<div class="gauge"><svg viewBox="0 0 100 100" aria-hidden="true">'
+            f'<path class="arc" d="M18.9 81.1 A44 44 0 1 1 81.1 81.1"/><g class="ticks">{ticks}</g>'
+            f'<g class="needle" style="--a:{a:.1f}deg"><line x1="50" y1="56" x2="50" y2="14"/></g>'
+            f'<circle class="hub" cx="50" cy="50" r="3.5"/></svg>'
+            f'<span class="gv {cls(v)}">{pct(v)}</span><span class="label">{label}</span></div>')
 
 
 def logo(t, info, size=""):
@@ -384,7 +413,7 @@ def page(title, body, today):
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Playfair+Display:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
 <meta name="description" content="Bot de trading en paper trading: cesto de acciones con filtro de caída, pronósticos y backtest frente a VWCE. Actualizado {today}.">
 <style>{CSS}</style></head>
 <body><div class="wrap">
@@ -487,12 +516,16 @@ def landing(ctx) -> str:
 
 <section class="hero">
   <span class="blob b1"></span><span class="blob b2"></span>
-  <h1><span class="grad">Bot de trading</span><br>que aprende a no caer tanto</h1>
-  <p>Simulación con dinero ficticio sobre 42 acciones y bitcoin. Un filtro vende lo que cae más de un 20 % desde su máximo, y todo se compara con el ETF global VWCE.</p>
-  <div class="cta">
-    <a class="btn main" href="panel.html">Abrir el panel {icon("arrow")}</a>
-    <a class="btn alt" href="panel.html#evaluacion">Ver el backtest {icon("arrow")}</a>
+  <div class="hero-text">
+    <p class="label" style="margin:0 0 14px">Paper trading · simulación</p>
+    <h1><span class="grad">Bot de trading</span><br><em class="serif">con filtro de caídas</em></h1>
+    <p>Simulación con dinero ficticio sobre 42 acciones y bitcoin. Un filtro vende lo que cae más de un 20 % desde su máximo, y todo se compara con el ETF global VWCE.</p>
+    <div class="cta">
+      <a class="btn main" href="panel.html">Abrir el panel {icon("arrow")}</a>
+      <a class="btn alt" href="panel.html#evaluacion">Ver el backtest {icon("arrow")}</a>
+    </div>
   </div>
+  <div class="hero-gauge">{gauge(ctx["sim_ret"], "Simulación desde " + ctx["start"])}</div>
 </section>
 
 <div class="tapewrap" data-reveal><div class="tape" id="tape"><span class="it">Cargando precios…</span></div></div>
