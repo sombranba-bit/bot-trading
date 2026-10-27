@@ -523,7 +523,7 @@ def page(title, body, today, sidebar=""):
 <title>{title}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<meta name="description" content="Bot de trading en paper trading: cesto de acciones con filtro de caída, pronósticos y backtest frente a VWCE. Actualizado {today}.">
+<meta name="description" content="Aldana Trading, bot de paper trading: cesto de acciones con filtro de caída, pronósticos y backtest frente a VWCE. Actualizado {today}.">
 <style>{CSS}</style></head>
 <body>
 <div class="shell">
@@ -545,7 +545,7 @@ def side_nav():
         f'<button data-t="{k}">{icon(ic)}<span>{v}</span><em>{i:02d}</em></button>'
         for i, (k, v, ic) in enumerate(SECTIONS, 1))
     return f"""<aside class="side">
-  <a class="brand" href="#inicio">{BRAND_MARK}<div><b>Bot de trading</b><small>Paper trading</small></div></a>
+  <a class="brand" href="#inicio">{BRAND_MARK}<div><b>Aldana Trading</b><small>Paper trading</small></div></a>
   <nav class="nav"><span class="label">Secciones</span>{links}</nav>
   <div class="side-foot">
     <div class="legend-c"><span><i style="background:var(--acc)"></i>Señal cumplida</span>
@@ -653,7 +653,7 @@ def render(ctx) -> str:
 </section>
 
 {dialogs}"""
-    return page("Bot de trading", body, ctx["today"], side_nav())
+    return page("Aldana Trading", body, ctx["today"], side_nav())
 
 
 def inicio(ctx) -> str:
@@ -678,7 +678,7 @@ def inicio(ctx) -> str:
   <span class="blob b1"></span><span class="blob b2"></span>
   <div>
     <span class="label">Cesto con filtro de caídas</span>
-    <h1 style="margin-top:12px"><span class="grad">Bot de trading</span><br>con filtro de caídas</h1>
+    <h1 style="margin-top:12px"><span class="grad">Aldana Trading</span><br>con filtro de caídas</h1>
     <p>Simulación sobre 42 acciones y bitcoin. Un filtro vende lo que cae más de un 20 % desde su máximo anual, y todo se compara con el ETF global VWCE.</p>
     <div class="cta">
       <a class="btn main" href="#resumen">Abrir el panel {icon("arrow")}</a>
