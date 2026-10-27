@@ -14,7 +14,7 @@ from alpaca.trading.client import TradingClient
 
 from config import BENCHMARK, COST, CRYPTO, CRYPTO_ALPACA, MIN_SAMPLE, MIN_VOTES, UNIVERSE
 from notify import photo, telegram
-from page import render
+from page import SECTOR_ES, landing, render
 from signals import votes
 
 ALPACA_TO_TICKER = {v.replace("/", ""): k for k, v in CRYPTO_ALPACA.items()}  # p. ej. BTCUSD -> BTC-USD
@@ -23,10 +23,6 @@ SECTOR_ICON = {"Technology": "💻", "Financial Services": "🏦", "Healthcare":
                "Utilities": "💡", "Real Estate": "🏢", "Basic Materials": "🧱"}
 
 
-SECTOR_ES = {"Technology": "Tecnología", "Financial Services": "Financiero", "Healthcare": "Salud",
-             "Consumer Defensive": "Consumo básico", "Consumer Cyclical": "Consumo discrecional",
-             "Energy": "Energía", "Communication Services": "Comunicación", "Industrials": "Industria",
-             "Utilities": "Suministros", "Real Estate": "Inmobiliario", "Basic Materials": "Materiales"}
 
 
 def pick_line(p):
@@ -119,7 +115,7 @@ def weekly(eq_rows, trades, grid, today):
         f"🔁 <b>Operaciones</b>  {len(ops)}", "",
         "🔥 <b>Acciones con más señales</b>",
         *[f"{SECTOR_ICON.get(f['info']['sector'], '📦')} <b>{escape(t)}</b> · {f['n']}/3" for t, f in top], "",
-        '🔗 <a href="https://sombranba-bit.github.io/bot-trading/">Ver el panel completo</a>',
+        '🔗 <a href="https://sombranba-bit.github.io/bot-trading/panel.html">Ver el panel completo</a>',
     ])
 
 
@@ -191,17 +187,19 @@ def main() -> None:
         *([f"… y {len(picks) - 12} más"] if len(picks) > 12 else []),
         *([] if picks else ["Ninguno hoy"]), "",
         f"🧪 <b>Evaluación</b>", escape(eval_txt), "",
-        '🔗 <a href="https://sombranba-bit.github.io/bot-trading/">Ver el panel completo</a>',
+        '🔗 <a href="https://sombranba-bit.github.io/bot-trading/panel.html">Ver el panel completo</a>',
     ])
-    html = render({
+    ctx = {
         "today": today, "start": start["fecha"], "sim_ret": sim_ret, "bench_ret": bench_ret,
         "equity": [(r["fecha"], float(r["equity"])) for r in eq_rows], "positions": positions, "picks": picks,
         "grid": grid, "trades": read_csv("data/trades.csv")[-8:][::-1], "status": status, "eval_txt": eval_txt,
         "backtest": read_csv("data/backtest.csv"),
-    })
+    }
     os.makedirs("docs", exist_ok=True)
+    with open("docs/panel.html", "w") as f:
+        f.write(render(ctx))
     with open("docs/index.html", "w") as f:
-        f.write(html)
+        f.write(landing(ctx))
     open("docs/.nojekyll", "w").close()
     telegram(text)
     photo("docs/informe.png", "📉 Curva de la simulación frente a VWCE y reparto por sector")
