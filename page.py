@@ -46,13 +46,13 @@ ICONS = {
 }
 
 CSS = """
-:root{--paper:#0e1116;--paper2:#161b22;--card:#161b22;--ink:#e6edf3;--mut:#8b949e;--rule:#30363d;--acc:#818cf8;--acc2:#2dd4bf;
---glow:#fb923c;--drv:#fb923c;--work:#facc15;--av:#38bdf8;--rest:#4ade80;--bad:#f87171;--ok:#4ade80;--warn:#fbbf24;
---accsoft:#1f2a44;--oksoft:#13301f;--badsoft:#3a1f24;--shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+:root{--paper:#0b0b0b;--paper2:#161616;--card:#121212;--ink:#f4f4f2;--mut:#8d8d8b;--rule:#2a2a2a;--acc:#e8b23a;--acc2:#f6dc8e;
+--glow:#c9962a;--drv:#c9962a;--work:#e8b23a;--av:#d9a441;--rest:#4ade80;--bad:#f87171;--ok:#4ade80;--warn:#fbbf24;
+--accsoft:#2a2110;--oksoft:#12261b;--badsoft:#2a1515;--shadow:0 1px 2px rgba(0,0,0,.5),0 10px 30px rgba(0,0,0,.5);
 --pos:var(--ok);--neg:var(--bad);--line:var(--rule);--txt:var(--ink);--muted:var(--mut);--a1:var(--acc);--a2:var(--acc2)}
-@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--paper:#f7f5fc;--paper2:#eeebf7;--card:#ffffff;--ink:#1d1736;--mut:#6b6588;
---rule:#e4e0f2;--acc:#7c3aed;--acc2:#06b6d4;--glow:#f97316;--drv:#f97316;--work:#eab308;--av:#06b6d4;--rest:#22c55e;--bad:#dc2626;--ok:#15803d;
---warn:#b45309;--accsoft:#ede6ff;--oksoft:#dcfce7;--badsoft:#fde8e8;--shadow:0 1px 2px rgba(29,23,54,.06),0 8px 24px rgba(29,23,54,.06)}}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--paper:#f6f1e4;--paper2:#ece5d2;--card:#fffdf7;--ink:#111111;--mut:#6b6558;
+--rule:#e2d8bf;--acc:#9a6d0c;--acc2:#c99a2e;--glow:#b07a14;--drv:#b07a14;--work:#c99a2e;--av:#a9781a;--rest:#15803d;--bad:#b91c1c;--ok:#15803d;
+--warn:#92580a;--accsoft:#f4e7c3;--oksoft:#dcefdc;--badsoft:#fbe2e2;--shadow:0 1px 2px rgba(17,17,17,.06),0 8px 24px rgba(17,17,17,.07)}}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;min-height:100vh;color:var(--ink);background:var(--paper);font:15px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -188,8 +188,8 @@ background:radial-gradient(300px circle at var(--mx,50%) var(--my,50%),color-mix
 .go{color:var(--mut);transition:transform .3s,color .3s;margin-top:4px}
 .pick:hover .go{transform:translateX(4px);color:var(--acc)}
 /* Logos: monograma de color propio por ticker */
-.logo{position:relative;width:52px;height:52px;flex:none;border-radius:14px;display:grid;place-items:center;overflow:hidden;color:#fff;
-background:linear-gradient(135deg,hsl(var(--h) 70% 58%),hsl(calc(var(--h) + 40) 65% 40%));box-shadow:inset 0 -2px 0 rgba(0,0,0,.25),0 6px 16px rgba(0,0,0,.2)}
+.logo{position:relative;width:52px;height:52px;flex:none;border-radius:14px;display:grid;place-items:center;overflow:hidden;color:var(--acc);
+background:#0b0b0b;border:1px solid color-mix(in srgb,var(--acc) 60%,transparent);box-shadow:inset 0 -2px 0 var(--acc),0 6px 16px rgba(0,0,0,.35)}
 .logo span{font:700 .8rem Inter,system-ui,sans-serif;letter-spacing:.01em;text-shadow:0 1px 2px rgba(0,0,0,.3)}
 .logo img{position:absolute;inset:0;width:100%;height:100%;background:#fff;object-fit:contain;padding:9px;opacity:0;transition:opacity .5s}
 .logo img.ok{opacity:1}
@@ -222,8 +222,8 @@ background:var(--card);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-sh
 .cell:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--acc)}
 .cell b{font-size:14px}
 .cell span{color:var(--mut)}
-.cell.v3{background:linear-gradient(135deg,var(--acc),color-mix(in srgb,var(--acc) 70%,var(--acc2)));border-color:transparent;color:#fff}
-.cell.v3 span,.cell.v3 .px{color:#fff;opacity:.9}
+.cell.v3{background:linear-gradient(135deg,var(--acc),var(--acc2));border-color:transparent;color:#0b0b0b}
+.cell.v3 span,.cell.v3 .px{color:#0b0b0b;opacity:.85}
 .cell.v2{background:color-mix(in srgb,var(--acc2) 18%,var(--card));border-color:color-mix(in srgb,var(--acc2) 40%,transparent)}
 .cell.v1{background:color-mix(in srgb,var(--acc) 10%,var(--card))}
 .cell.v0{opacity:.7}
@@ -253,7 +253,7 @@ display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:36px;align-
 .hero-gauge{position:relative;display:flex;justify-content:center}
 .cta{position:relative;display:flex;flex-wrap:wrap;gap:12px}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:12px;font-weight:700;font-size:15px;border:1px solid var(--rule);background:var(--card);color:var(--ink);transition:transform .2s,box-shadow .25s,border-color .2s}
-.btn.main{background:linear-gradient(135deg,var(--acc),var(--acc2));border-color:transparent;color:#fff}
+.btn.main{background:linear-gradient(135deg,var(--acc),var(--acc2));border-color:transparent;color:#0b0b0b}
 .btn.main:hover{box-shadow:0 12px 30px color-mix(in srgb,var(--acc) 45%,transparent)}
 .btn:hover{transform:translateY(-2px);border-color:var(--acc)}
 .btn .ic{width:18px;height:18px;transition:transform .25s}.btn:hover .ic{transform:translateX(3px)}
@@ -368,7 +368,7 @@ setInterval(precios,60000); setInterval(ago,60000);
 """
 
 BRAND_MARK = ('<svg class="mark" viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="gm" x1="0" y1="0" x2="1" y2="1">'
-              '<stop offset="0" stop-color="#818cf8"/><stop offset="1" stop-color="#2dd4bf"/></linearGradient></defs>'
+              '<stop offset="0" stop-color="#f6dc8e"/><stop offset="1" stop-color="#e8b23a"/></linearGradient></defs>'
               '<rect x="2" y="2" width="36" height="36" rx="11" fill="url(#gm)" opacity=".2"/>'
               '<path d="M9 27V19M16 27V13M23 27V17M30 27V9" stroke="url(#gm)" stroke-width="3" stroke-linecap="round"/></svg>')
 
@@ -402,11 +402,10 @@ def gauge(v, label):
 
 def logo(t, info, size=""):
     # Monograma con color propio por ticker; el favicon de la empresa aparece encima si carga
-    h = sum(map(ord, t)) * 37 % 360
     dom = urlparse(info.get("web") or "").netloc.replace("www.", "")
     img = (f'<img src="https://www.google.com/s2/favicons?domain={escape(dom)}&amp;sz=128" alt="" '
            f'loading="lazy" onerror="this.remove()">') if dom else ""
-    return f'<div class="logo {size}" style="--h:{h}"><span>{escape(t.split("-")[0][:5])}</span>{img}</div>'
+    return f'<div class="logo {size}"><span>{escape(t.split("-")[0][:5])}</span>{img}</div>'
 
 
 def sector_mark(t, info):
@@ -440,8 +439,8 @@ def spark(vals, h=240, extra=""):
     line = " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
     area = f"0,{h} {line} {w},{h}"
     return (f'<svg viewBox="0 0 {w} {h}" preserveAspectRatio="none" class="chart {extra}" style="height:{h}px">'
-            f'<defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#818cf8" stop-opacity=".35"/>'
-            f'<stop offset="1" stop-color="#818cf8" stop-opacity="0"/></linearGradient></defs>'
+            f'<defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8b23a" stop-opacity=".35"/>'
+            f'<stop offset="1" stop-color="#e8b23a" stop-opacity="0"/></linearGradient></defs>'
             f'<polygon points="{area}" fill="url(#sg)" class="fill"/>'
             f'<polyline points="{line}" pathLength="1" class="draw" fill="none" stroke="var(--acc)" stroke-width="3" '
             f'stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>')
