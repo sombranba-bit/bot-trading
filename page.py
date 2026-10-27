@@ -41,19 +41,19 @@ ICONS = {
 }
 
 CSS = """
-:root{--bg:#0b0b0b;--card:rgba(17,17,17,.78);--line:rgba(255,255,255,.08);--txt:#f4f4f2;--muted:#8d8d8b;
---pos:#5ccf8e;--neg:#f08a7d;--warn:#e6b45a;--a1:#ffb000;--a2:#ff8a3d;--acc:#ffb000}
-@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#f6f5f1;--card:rgba(255,255,255,.85);--line:rgba(0,0,0,.09);
---txt:#161513;--muted:#6b675e;--pos:#2f8f5b;--neg:#c2452f;--warn:#93600a;--acc:#b86e00;--a1:#b86e00;--a2:#d9480f}}
+:root{--bg:#0e1116;--card:rgba(22,27,34,.92);--line:#30363d;--txt:#e6edf3;--muted:#8b949e;
+--pos:#4ade80;--neg:#f87171;--warn:#fbbf24;--a1:#818cf8;--a2:#2dd4bf;--acc:#818cf8;--glow:#fb923c}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#f7f5fc;--card:#ffffff;--line:#e4e0f2;
+--txt:#1d1736;--muted:#6b6588;--pos:#15803d;--neg:#dc2626;--warn:#b45309;--acc:#7c3aed;--a1:#7c3aed;--a2:#06b6d4;--glow:#f97316}}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;min-height:100vh;color:var(--txt);background:var(--bg);font:15px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:hidden;
-background-image:radial-gradient(circle,rgba(255,255,255,.07) 1px,transparent 1.3px),radial-gradient(900px 520px at 50% -18%,rgba(255,176,0,.11),transparent 65%);background-size:26px 26px,100% 100%;background-attachment:fixed}
-.serif{font-family:"Playfair Display",Georgia,serif;font-style:italic;font-weight:400;letter-spacing:-.01em}
-.label{font:600 .68rem "JetBrains Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+background-image:radial-gradient(circle,rgba(255,255,255,.07) 1px,transparent 1.3px),radial-gradient(900px 520px at 50% -18%,rgba(129,140,248,.14),transparent 65%);background-size:26px 26px,100% 100%;background-attachment:fixed}
+.serif{font-family:Inter,system-ui,sans-serif;font-style:normal;font-weight:400;letter-spacing:-.01em}
+.label{font:600 .68rem Inter,system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 a{color:inherit;text-decoration:none}
 .wrap{max-width:1180px;margin:0 auto;padding:22px 26px 40px}
-.mono,.px,.kpi strong,.big-px,.tape{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.mono,.px,.kpi strong,.big-px,.tape{font-family:Inter,system-ui,sans-serif;font-variant-numeric:tabular-nums}
 .grad{background:linear-gradient(90deg,var(--a1),var(--a2),var(--a1));background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 7s linear infinite}
 @keyframes shine{to{background-position:200% center}}
 @keyframes in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
@@ -91,7 +91,8 @@ a{color:inherit;text-decoration:none}
 .glow{position:relative;overflow:hidden}
 .glow::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .35s;background:radial-gradient(280px circle at var(--mx,50%) var(--my,50%),rgba(125,211,252,.16),transparent 60%)}
 .glow:hover::before{opacity:1}
-.kpi{padding:18px} .kpi:hover,.panel:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(0,0,0,.28);border-color:rgba(125,211,252,.3)}
+.kpis .kpi:nth-child(2){border-top:3px solid var(--a2)}.kpis .kpi:nth-child(3){border-top:3px solid var(--glow)}.kpis .kpi:nth-child(4){border-top:3px solid var(--pos)}
+.kpi{padding:18px;border-top:3px solid var(--acc)} .kpi:hover,.panel:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(0,0,0,.28);border-color:rgba(125,211,252,.3)}
 .panel{padding:20px}
 .kh{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.84rem}
 .kico{display:grid;place-items:center;width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,rgba(125,211,252,.2),rgba(167,139,250,.2));color:var(--acc)}
@@ -117,7 +118,7 @@ h2 .ic{color:var(--acc)}
 .dot.c{background:var(--pos)} .dot.v{background:var(--neg)}
 /* logos y sectores */
 .logo{position:relative;width:54px;height:54px;flex:none;border-radius:14px;display:grid;place-items:center;overflow:hidden;color:var(--txt);background:#151515;border:1px solid var(--line);box-shadow:inset 0 -2px 0 var(--acc)}
-.logo span{font:700 .82rem "JetBrains Mono",ui-monospace,monospace;letter-spacing:.02em}
+.logo span{font:700 .82rem Inter,system-ui,sans-serif;letter-spacing:.02em}
 .logo img{position:absolute;inset:0;width:100%;height:100%;background:#fff;object-fit:contain;padding:9px;opacity:0;transition:opacity .5s}
 .logo img.ok{opacity:1}
 .logo.sm{width:36px;height:36px;border-radius:11px} .logo.sm span{font-size:.62rem}
@@ -125,14 +126,14 @@ h2 .ic{color:var(--acc)}
 .sec{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;color:var(--muted);margin-top:2px}
 .sec-ic{display:grid;place-items:center;width:22px;height:22px;border-radius:7px;background:rgba(125,211,252,.12);color:var(--acc)}
 .sec-ic .ic{width:14px;height:14px}
-.glyph{font:700 .85rem "JetBrains Mono",monospace;color:#f7931a;background:rgba(247,147,26,.14)}
+.glyph{font:700 .85rem Inter,system-ui,sans-serif;color:#f7931a;background:rgba(247,147,26,.14)}
 .pick{display:flex;gap:16px;align-items:center;padding:16px;border-radius:16px;border:1px solid transparent;cursor:pointer;margin-bottom:6px}
 .pick:hover{border-color:var(--line);background:rgba(125,211,252,.05);transform:translateX(4px)}
 .pick .go{margin-left:auto;color:var(--muted);transition:transform .3s,color .3s}
 .pick:hover .go{transform:translateX(4px);color:var(--acc)}
 .pb{min-width:0;flex:1}
 .ttl{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
-.tk{font:600 .78rem "JetBrains Mono",monospace;color:var(--acc);background:rgba(125,211,252,.1);padding:1px 7px;border-radius:6px}
+.tk{font:600 .78rem Inter,system-ui,sans-serif;color:var(--acc);background:rgba(125,211,252,.1);padding:1px 7px;border-radius:6px}
 .pick p{margin:6px 0;font-size:.9rem;color:var(--txt);opacity:.85;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .meta{color:var(--muted);font-size:.84rem}
 .mini{display:flex;gap:12px;align-items:center;padding:10px;border-radius:14px;transition:background .2s,transform .2s}
@@ -144,7 +145,7 @@ h2 .ic{color:var(--acc)}
 .heat{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:10px}
 .cell{border-radius:14px;padding:12px;font-size:.8rem;display:flex;flex-direction:column;gap:3px;cursor:pointer;border:1px solid var(--line);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
 .cell:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 10px 24px rgba(0,0,0,.3)}
-.cell b{font:700 .92rem "JetBrains Mono",monospace} .cell span{opacity:.8} .cell em{font-style:normal}
+.cell b{font:700 .92rem Inter,system-ui,sans-serif} .cell span{opacity:.8} .cell em{font-style:normal}
 .v0{background:rgba(148,163,184,.08);color:var(--muted)} .v1{background:rgba(52,211,153,.12);color:#86efac}
 .v2{background:linear-gradient(135deg,rgba(52,211,153,.35),rgba(52,211,153,.18));color:#ecfdf5} .v3{background:linear-gradient(135deg,#34d399,#10b981);color:#022c22;box-shadow:0 0 22px rgba(52,211,153,.35)}
 .legend{font-size:.82rem;margin-top:14px}
@@ -158,7 +159,7 @@ h2 .ic{color:var(--acc)}
 .big-px{font-size:2rem;font-weight:700;margin:16px 0 4px;letter-spacing:-.02em}.big-px .px{font-size:1.05rem}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
 .stats div{background:rgba(125,211,252,.05);border:1px solid var(--line);border-radius:14px;padding:12px}
-.stats span{display:block;color:var(--muted);font-size:.72rem} .stats b{font:600 1rem "JetBrains Mono",monospace}
+.stats span{display:block;color:var(--muted);font-size:.72rem} .stats b{font:600 1rem Inter,system-ui,sans-serif}
 footer{margin-top:28px;color:var(--muted);font-size:.8rem;text-align:center}
 /* portada */
 .hero{position:relative;overflow:hidden;border-radius:26px;padding:56px 40px;border:1px solid var(--line);background:var(--card);animation:in .7s ease both}
@@ -175,7 +176,7 @@ footer{margin-top:28px;color:var(--muted);font-size:.8rem;text-align:center}
 .gauge .needle{transform-origin:50px 50px;transform:rotate(var(--a));animation:sweep 1.8s cubic-bezier(.22,1,.36,1) .25s both}
 .gauge .needle line{stroke:var(--acc);stroke-width:2.4;stroke-linecap:round}
 .gauge .hub{fill:var(--acc)}
-.gauge .gv{font:700 1.5rem "JetBrains Mono",monospace;letter-spacing:-.02em}
+.gauge .gv{font:700 1.5rem Inter,system-ui,sans-serif;letter-spacing:-.02em}
 @keyframes sweep{from{transform:rotate(-135deg)}}
 .hero h1{position:relative;margin:0;font-size:clamp(2.2rem,5.5vw,3.8rem);line-height:1.05;letter-spacing:-.03em}
 .hero p{position:relative;max-width:620px;color:var(--muted);font-size:1.05rem;margin:16px 0 26px}
@@ -196,12 +197,12 @@ footer{margin-top:28px;color:var(--muted);font-size:.8rem;text-align:center}
 .nc:hover .ico{transform:rotate(-6deg) scale(1.06)}
 .nc .ico .ic{width:24px;height:24px}
 .nc h3{margin:0 0 6px;font-size:1.1rem} .nc p{margin:0 0 14px;color:var(--muted);font-size:.9rem}
-.nc .tag{font:600 .8rem "JetBrains Mono",monospace;color:var(--acc)}
+.nc .tag{font:600 .8rem Inter,system-ui,sans-serif;color:var(--acc)}
 .nc .arr{position:absolute;right:20px;bottom:20px;color:var(--muted);transition:transform .3s,color .3s}
 .nc:hover .arr{transform:translateX(5px);color:var(--acc)}
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
 .step{padding:20px;border-radius:18px;border:1px solid var(--line);background:var(--card)}
-.step .n{font:700 .8rem "JetBrains Mono",monospace;color:var(--acc)}
+.step .n{font:700 .8rem Inter,system-ui,sans-serif;color:var(--acc)}
 .step h3{margin:8px 0 6px;font-size:1rem} .step p{margin:0;color:var(--muted);font-size:.9rem}
 .sec-title{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:34px 0 14px;font-weight:700}
 [data-reveal]{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
@@ -413,7 +414,7 @@ def page(title, body, today):
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Playfair+Display:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <meta name="description" content="Bot de trading en paper trading: cesto de acciones con filtro de caída, pronósticos y backtest frente a VWCE. Actualizado {today}.">
 <style>{CSS}</style></head>
 <body><div class="wrap">
