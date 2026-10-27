@@ -17,6 +17,7 @@ from alpaca.trading.enums import OrderSide, TimeInForce
 from alpaca.trading.requests import MarketOrderRequest
 
 from config import ASSETS, CORE, CRYPTO, CRYPTO_ALPACA, MAX_INVESTED, MAX_POSITIONS, STOCK_BUDGET, UNIVERSE
+from forecast import record_changes
 from notify import telegram
 from strategy import signal
 
@@ -58,11 +59,15 @@ def main() -> None:
 
     # Acciones solo con bolsa abierta; cripto siempre
     tickers = (CORE + UNIVERSE if market_open else []) + CRYPTO
-    decisions = []
+    decisions, events = [], []
     for t in tickers:
-        want = bool(signal(closes(t)).iloc[-1]) if t in UNIVERSE else True  # acciones: tendencia; VT y cripto: siempre
+        c = closes(t)
+        want = bool(signal(c).iloc[-1]) if t in UNIVERSE else True  # acciones: tendencia; VT y cripto: siempre
+        if t in UNIVERSE:
+            events.append((t, int(want), float(c.iloc[-1])))
         symbol = CRYPTO_ALPACA.get(t, t)
         decisions.append((t, symbol, want, symbol.replace("/", "") in held))
+    record_changes(events)  # registro para medir después si la señal acertó
     if market_open:  # posiciones que ya no forman parte de la cartera (p. ej. las acciones de la estrategia anterior)
         wanted = {d[1].replace("/", "") for d in decisions}
         decisions += [(p.symbol, p.symbol, False, True) for p in positions if p.symbol not in wanted]

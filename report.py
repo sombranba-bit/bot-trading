@@ -15,6 +15,7 @@ from alpaca.trading.client import TradingClient
 from config import BENCHMARK, COST, CRYPTO, CRYPTO_ALPACA, MIN_SAMPLE, MIN_VOTES, UNIVERSE
 from notify import photo, telegram
 from page import SECTOR_ES, render
+from forecast import PATH as SENALES
 from signals import votes
 
 ALPACA_TO_TICKER = {v.replace("/", ""): k for k, v in CRYPTO_ALPACA.items()}  # p. ej. BTCUSD -> BTC-USD
@@ -179,6 +180,17 @@ def main() -> None:
             if ex:
                 aviso = "" if len(ex) >= MIN_SAMPLE else f" (muestra pequeña: menos de {MIN_SAMPLE}, no concluyente)"
                 partes.append(f"{c} votos: {len(ex)} pronósticos, exceso medio {sum(ex) / len(ex):+.1%} frente a VWCE{aviso}")
+    # Señales de tendencia del bot (compra = 1, venta = 0), medidas frente a VWCE a 90 días
+    sen = [r for r in read_csv(SENALES) if r["fecha"] <= old_cut]
+    if sen:
+        last_s = {t: last_price(t) for t in {r["ticker"] for r in sen}}
+        bench_s = yf.download(BENCHMARK, start=min(r["fecha"] for r in sen), progress=False, auto_adjust=True)["Close"].iloc[:, 0]
+        for senal, nombre in (("1", "compras"), ("0", "ventas")):
+            grupo = [r for r in sen if r["senal"] == senal]
+            ex = excess(grupo, last_s, bench_s)
+            if ex:
+                aviso = "" if len(ex) >= MIN_SAMPLE else f" (muestra pequeña: menos de {MIN_SAMPLE})"
+                partes.append(f"tendencia, {nombre}: {len(ex)} señales, exceso medio {sum(ex) / len(ex):+.1%} a 90 días{aviso}")
     eval_txt = " · ".join(partes) or "Sin pronósticos de más de 90 días todavía."
 
     # 4. Salida: texto para Telegram y página HTML
