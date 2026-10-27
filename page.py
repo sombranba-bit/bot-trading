@@ -239,7 +239,7 @@ footer{{margin-top:24px;color:var(--muted);font-size:.8rem}}
   <p class="muted legend">Exceso = rentabilidad de cada acción menos la del VWCE desde su fecha, descontando un 0,2 % de costes. Un valor positivo significa que el criterio aporta algo frente al mercado.</p></div>
   <div class="panel" style="margin-top:16px"><h2>Backtest: tendencia frente a comprar y mantener</h2>
   <div class="row bt head"><span>Escenario</span><span>Anual</span><span>Caída máx.</span><span>Total</span></div>{bt}
-  <p class="muted legend">Desde marzo de 2019, mismo cesto de 42 acciones frente a VWCE. Solo cubre la señal de tendencia, no la infravaloración. El cesto son las acciones de hoy, así que los escenarios que las mantienen salen favorecidos.</p></div></section>
+  <p class="muted legend">Desde marzo de 2019, mismo cesto de 42 acciones frente a VWCE. El bot actual vende cada acción tras caer más de un 20 % desde su máximo anual. No incluye la infravaloración, que no se puede backtestear con datos gratuitos. El cesto son las acciones de hoy, así que los escenarios que las mantienen salen favorecidos.</p></div></section>
 
 {dialogs}
 <footer>Simulación, no asesoramiento financiero. Datos de Yahoo Finance y Alpaca. Precios con retraso de hasta 15 minutos.</footer>
