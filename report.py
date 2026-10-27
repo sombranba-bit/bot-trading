@@ -79,14 +79,18 @@ def chart(eq_rows, bench, positions, screen, path):
     import matplotlib.pyplot as plt
 
     fig, (ax, bx) = plt.subplots(1, 2, figsize=(10, 4), gridspec_kw={"width_ratios": [2, 1]})
+    fig.patch.set_facecolor("#0b0b0b")  # negro y dorado, como la web
+    for a in (ax, bx):
+        a.set_facecolor("#0b0b0b"); a.tick_params(colors="#d8d8d4"); a.title.set_color("#f4f4f2")
+        for s in a.spines.values(): s.set_color("#2a2a2a")
     vals = [float(r["equity"]) for r in eq_rows]
     ax.plot(pd.to_datetime([r["fecha"] for r in eq_rows]), [(v / vals[0] - 1) * 100 for v in vals],
-            color="#58a6ff", lw=2.5, label="Simulación")
+            color="#e8b23a", lw=2.5, label="Simulación")
     if len(bench) > 1:
-        ax.plot(bench.index, (bench / bench.iloc[0] - 1) * 100, color="#8b98a5", lw=1.5, ls="--", label="VWCE")
-    ax.axhline(0, color="#30363d", lw=1)
+        ax.plot(bench.index, (bench / bench.iloc[0] - 1) * 100, color="#8d8d8b", lw=1.5, ls="--", label="VWCE")
+    ax.axhline(0, color="#2a2a2a", lw=1)
     ax.set_title("Rentabilidad desde el inicio (%)")
-    ax.legend(frameon=False)
+    ax.legend(frameon=False, labelcolor="#d8d8d4")
     ax.tick_params(axis="x", labelrotation=30)
 
     sectors = {}
@@ -96,7 +100,7 @@ def chart(eq_rows, bench, positions, screen, path):
         sectors[s] = sectors.get(s, 0) + p["value"]
     if sectors:
         names, amounts = zip(*sorted(sectors.items(), key=lambda x: x[1]))
-        bx.barh(names, amounts, color="#3fb950")
+        bx.barh(names, amounts, color="#e8b23a")
     bx.set_title("Cartera por sector (USD)")
     fig.tight_layout()
     fig.savefig(path, dpi=110)

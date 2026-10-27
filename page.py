@@ -46,7 +46,7 @@ ICONS = {
 }
 
 CSS = """
-:root{--paper:#0b0b0b;--paper2:#161616;--card:#121212;--ink:#f4f4f2;--mut:#8d8d8b;--rule:#2a2a2a;--acc:#e8b23a;--acc2:#f6dc8e;
+:root{--paper:#0b0b0b;--paper2:#1a1a1a;--card:#121212;--ink:#f4f4f2;--mut:#8d8d8b;--rule:#ffffff17;--acc:#e8b23a;--acc2:#f6dc8e;
 --glow:#c9962a;--drv:#c9962a;--work:#e8b23a;--av:#d9a441;--rest:#4ade80;--bad:#f87171;--ok:#4ade80;--warn:#fbbf24;
 --accsoft:#2a2110;--oksoft:#12261b;--badsoft:#2a1515;--shadow:0 1px 2px rgba(0,0,0,.5),0 10px 30px rgba(0,0,0,.5);
 --pos:var(--ok);--neg:var(--bad);--line:var(--rule);--txt:var(--ink);--muted:var(--mut);--a1:var(--acc);--a2:var(--acc2)}
@@ -60,6 +60,7 @@ body{margin:0;min-height:100vh;color:var(--ink);background:var(--paper);font:15p
 a{color:inherit;text-decoration:none}
 button{font:inherit}
 .num{font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.px,.tk,.gv,.when,.tape{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace}
 .label{font:600 11px/1.2 Inter,system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
 .grad{background:linear-gradient(90deg,var(--acc),var(--acc2),var(--glow));background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sweep 6s linear infinite}
 .pos{color:var(--pos)} .neg{color:var(--neg)} .muted{color:var(--mut)}
@@ -521,7 +522,7 @@ def page(title, body, today, sidebar=""):
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <meta name="description" content="Aldana Trading, bot de paper trading: cesto de acciones con filtro de caída, pronósticos y backtest frente a VWCE. Actualizado {today}.">
 <style>{CSS}</style></head>
 <body>
