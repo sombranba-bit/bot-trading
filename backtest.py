@@ -33,7 +33,7 @@ def metrics(r):
 def main() -> None:
     close = yf.download(CORE + UNIVERSE + CRYPTO + [BENCHMARK], start=START, progress=False, auto_adjust=True)["Close"]
     bench = close.pop(BENCHMARK).dropna()
-    close = close.loc[bench.index[0]:].ffill().dropna(axis=1, how="all")  # periodo común: desde que existe VWCE
+    close = close.loc[bench.index[0]:].reindex(bench.index).ffill().dropna(axis=1, how="all")  # días de bolsa (bitcoin se alinea)
 
     ret = close.pct_change().fillna(0)
     stocks = close[UNIVERSE]
