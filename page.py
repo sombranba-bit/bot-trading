@@ -607,7 +607,7 @@ def render(ctx) -> str:
     {gauge(ctx["sim_ret"], "Simulación desde " + ctx["start"])}
     <div class="txt"><span class="label">Rentabilidad de la simulación</span>
       <h2 style="font-size:22px;margin:6px 0 0">{pct(ctx["sim_ret"])} frente a {pct(ctx["bench_ret"])} de VWCE</h2>
-      <p>VT (mercado mundial) y bitcoin, comprados y mantenidos. Comparado con el ETF global VWCE desde el mismo día.</p></div>
+      <p>60 % VT, 25 % acciones con tendencia y 15 % bitcoin. Comparado con el ETF global VWCE desde el mismo día.</p></div>
   </div>
   <div class="kpis">
     {kpi("Simulación", pct(ctx["sim_ret"]), cls(ctx["sim_ret"]), ctx["sim_ret"] * 100, "%", "chart")}
@@ -667,17 +667,17 @@ def inicio(ctx) -> str:
     nav = "".join(f"""<button class="nc" data-go="{k}" data-reveal>
   <span class="ico">{icon(ic)}</span><h3>{title}</h3><p>{desc_}</p><span class="tag">{tag}</span>
   <span style="position:absolute;right:20px;bottom:20px;color:var(--mut)">{icon("arrow")}</span></button>""" for k, title, ic, desc_, tag in cards)
-    steps = [("01", "Cartera", "Compra VT y bitcoin, y los mantiene sin vender por caídas."),
-             ("02", "Sin filtro", "Antes vendía lo que caía más de un 20 %. Ahora solo sale de la cartera lo que no esté en ella."),
+    steps = [("01", "Núcleo", "VT (60 %) y bitcoin (15 %), comprados y mantenidos."),
+             ("02", "Tendencia", "Las 42 acciones (25 %) entran cuando su media de 20 días cruza por encima de la de 100, y salen al cruzar por debajo."),
              ("03", "Informe", "Cada día, la simulación frente a VWCE, y un aviso en Telegram por cada movimiento.")]
     step_html = "".join(f'<div class="step" data-reveal><span class="n">{n}</span><h3>{t}</h3><p>{d}</p></div>' for n, t, d in steps)
     return f"""<section class="view" id="inicio">
 <section class="hero">
   <span class="blob b1"></span><span class="blob b2"></span>
   <div>
-    <span class="label">Comprar y mantener</span>
-    <h1 style="margin-top:12px"><span class="grad">Aldana Trading</span><br>VT y bitcoin</h1>
-    <p>Simulación con VT (mercado mundial) y bitcoin, comparada con el ETF global VWCE.</p>
+    <span class="label">Núcleo y tendencia</span>
+    <h1 style="margin-top:12px"><span class="grad">Aldana Trading</span><br>VT, acciones y bitcoin</h1>
+    <p>Simulación con 60 % en VT, 25 % en acciones con tendencia y 15 % en bitcoin, comparada con el ETF global VWCE.</p>
     <div class="cta">
       <a class="btn main" href="#resumen">Abrir el panel {icon("arrow")}</a>
       <a class="btn" href="#evaluacion">Ver el backtest {icon("arrow")}</a>

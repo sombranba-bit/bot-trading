@@ -17,7 +17,8 @@ BENCHMARK = "VWCE.DE"
 
 # Cartera: importe simulado por activo que el bot compra y mantiene
 CORE = ["VT"]                  # ETF del mercado mundial, equivalente más cercano a VWCE
-ASSETS = {"VT": 85000, "BTC-USD": 15000}
+ASSETS = {"VT": 60000, "BTC-USD": 15000}  # 60 % VT, 15 % bitcoin
+STOCK_BUDGET = 25000  # 25 % en las acciones del universo, repartido a partes iguales, con tendencia 20/100
 MIN_VOTES = 2     # comprar si al menos 2 de las 3 señales están a favor
 DROP = 1.0              # filtro de caída desactivado (antes 0.20): se compra y se mantiene
 MAX_POSITIONS = 50      # tope de posiciones abiertas a la vez (cesto de 42 más margen)

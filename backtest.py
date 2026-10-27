@@ -1,8 +1,9 @@
-"""Backtest de la cartera del bot (config.CORE) frente a VWCE, en el mismo periodo:
+"""Backtest de la cartera del bot frente a VWCE, en el mismo periodo:
 
-1. Tendencia: entra o sale según la media de 20/100 días (como en el bot).
-2. Comprar y mantener: sin vender nunca.
-3. VWCE comprar y mantener: referencia global.
+- Acciones con tendencia (42, a partes iguales, 25 %): entran o salen según la media de 20/100 días.
+- VT y bitcoin comprados y mantenidos (60 % y 15 %), con reequilibrio diario (aproximación).
+- Cartera del bot: 60 % VT + 25 % acciones con tendencia + 15 % bitcoin.
+- VWCE comprar y mantener: referencia global.
 
 Limitación: solo cubre la señal de tendencia. El criterio de infravaloración necesita históricos de
 P/E y precios objetivo que Yahoo no ofrece de forma fiable, así que no se puede backtestear.
@@ -15,7 +16,7 @@ import os
 import pandas as pd
 import yfinance as yf
 
-from config import BENCHMARK, CORE
+from config import ASSETS, BENCHMARK, CORE, CRYPTO, STOCK_BUDGET, UNIVERSE
 from strategy import signal
 
 START = "2018-01-01"
@@ -30,21 +31,30 @@ def metrics(r):
 
 
 def main() -> None:
-    close = yf.download(CORE + [BENCHMARK], start=START, progress=False, auto_adjust=True)["Close"]
+    close = yf.download(CORE + UNIVERSE + CRYPTO + [BENCHMARK], start=START, progress=False, auto_adjust=True)["Close"]
     bench = close.pop(BENCHMARK).dropna()
     close = close.loc[bench.index[0]:].ffill().dropna(axis=1, how="all")  # periodo común: desde que existe VWCE
 
     ret = close.pct_change().fillna(0)
-    pos = close.apply(signal)
+    stocks = close[UNIVERSE]
+    sr = stocks.pct_change().fillna(0)
+    pos = stocks.apply(signal)
     trades = pos.diff().abs().fillna(0)
+    sleeve = (pos * sr - trades * FEE).mean(axis=1)  # 42 acciones a partes iguales; fuera = efectivo (0)
+    vt, btc = ret["VT"], ret["BTC-USD"]
+    total = sum(ASSETS.values()) + STOCK_BUDGET
+    w = {t: a / total for t, a in ASSETS.items()}
+    sl = STOCK_BUDGET / (sum(ASSETS.values()) + STOCK_BUDGET)
+    bot = w["VT"] * vt + w["BTC-USD"] * btc + sl * sleeve
     scenarios = {
-        "Tendencia": (pos * ret - trades * FEE).mean(axis=1),
-        "Comprar y mantener": ret.mean(axis=1),
+        "VT comprar y mantener": vt,
+        "Acciones con tendencia (42)": sleeve,
+        "Cartera del bot (60/25/15)": bot,
         "VWCE comprar y mantener": bench.pct_change().fillna(0).reindex(close.index).fillna(0),
     }
 
     rows = []
-    trades_by = {"Tendencia": trades}
+    trades_by = {"Acciones con tendencia (42)": trades}
     for name, r in scenarios.items():
         n_ops = int(trades_by[name].sum().sum()) if name in trades_by else 0
         rows.append({"escenario": name, **metrics(r), "operaciones": n_ops})
