@@ -22,7 +22,7 @@ STOCK_BUDGET = 25000  # 25 % en las acciones del universo, repartido a partes ig
 MIN_VOTES = 2     # comprar si al menos 2 de las 3 señales están a favor
 DROP = 1.0              # filtro de caída desactivado (antes 0.20): se compra y se mantiene
 MAX_POSITIONS = 50      # tope de posiciones abiertas a la vez (cesto de 42 más margen)
-MAX_INVESTED = 100000   # tope de capital invertido (USD simulados)
+MAX_INVESTED = 110000   # tope de capital invertido (USD simulados); la cartera actual ronda los 102.000
 COST = 0.002            # comisión + deslizamiento, ida y vuelta, al evaluar pronósticos
 MIN_SAMPLE = 30         # pronósticos mínimos por criterio para sacar conclusiones
 
