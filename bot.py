@@ -36,11 +36,11 @@ def log_trade(symbol, action):
         w.writerow([datetime.now(timezone.utc).isoformat(timespec="minutes"), symbol, action, ""])
 
 
-def save_status(market_open, acciones, parado=False):
+def save_status(market_open, acciones, parado=False, posiciones=None):
     os.makedirs("data", exist_ok=True)
     with open("data/status.json", "w") as f:
         json.dump({"ts": datetime.now(timezone.utc).isoformat(timespec="minutes"), "mercado_abierto": market_open,
-                   "parado": parado, "acciones": acciones}, f)
+                   "parado": parado, "acciones": acciones, "posiciones": posiciones or {}}, f)
 
 
 def main() -> None:
@@ -100,7 +100,7 @@ def main() -> None:
 
     if avisos:  # un solo mensaje por ejecución, para no inundar el grupo en la primera carga
         telegram("🤖 <b>Movimientos del bot</b> · <i>simulación</i>\n\n" + "\n".join(avisos))
-    save_status(market_open, acciones)
+    save_status(market_open, acciones, posiciones={k: round(v, 2) for k, v in values.items()})
 
 
 if __name__ == "__main__":
