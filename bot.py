@@ -76,7 +76,7 @@ def main() -> None:
     for t, symbol, want, is_in in decisions:
         key = symbol.replace("/", "")
         if want and not is_in:
-            amount = ASSETS.get(t, STOCK_BUDGET / len(UNIVERSE))
+            amount = round(ASSETS.get(t, STOCK_BUDGET / len(UNIVERSE)), 2)  # Alpaca admite 2 decimales
             if len(held) >= MAX_POSITIONS or invested + amount > MAX_INVESTED:
                 print("Tope alcanzado, no se compra", symbol)
                 continue
