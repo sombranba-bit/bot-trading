@@ -64,6 +64,7 @@ color:var(--mut);font-size:15px;font-weight:600;text-align:left;cursor:pointer;t
 .top h1{margin:0;font-size:24px;font-weight:600;letter-spacing:-.02em}
 .top p{margin:2px 0 0;color:var(--mut);font-size:14px}
 .pills{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+:where(button,a):focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;border:1px solid var(--rule);background:var(--card);font-size:13px}
 .pill.ok{border-color:color-mix(in srgb,var(--ok) 50%,transparent);color:var(--ok)}
 .pill.off{border-color:color-mix(in srgb,var(--warn) 50%,transparent);color:var(--warn)}
@@ -267,7 +268,7 @@ footer{margin-top:28px;color:var(--mut);font-size:12.5px;text-align:center}
 
 <header class="top">
   <div><h1 id="titulo">Inicio</h1><p>Paper trading · informe del 2026-11-11</p></div>
-  <div class="pills"><span class="pill ok"><i></i>Bot activo · <b class="ago" data-ts="2026-11-11T19:47+00:00">2026-11-11T19:47+00:00</b></span><span class="pill">Bolsa EE. UU. abierta</span><span class="pill">Precios <b id="pxts">cargando…</b></span></div>
+  <div class="pills"><span class="pill ok"><i></i><span class="lead">Bot activo</span> · <b class="ago" data-ts="2026-11-11T19:47+00:00">2026-11-11T19:47+00:00</b></span><span class="pill">Bolsa EE. UU. abierta</span><span class="pill">Precios <b id="pxts">cargando…</b></span></div>
 </header>
 <div class="tapewrap"><div class="tape" id="tape"><span class="it">Cargando precios…</span></div></div>
 
@@ -282,7 +283,7 @@ footer{margin-top:28px;color:var(--mut);font-size:12.5px;text-align:center}
       <a class="btn" href="#evaluacion">Ver el backtest <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     </div>
   </div>
-  <div class="hero-gauge"><div class="gauge"><svg viewBox="0 0 100 100" aria-hidden="true"><path class="arc" d="M18.9 81.1 A44 44 0 1 1 81.1 81.1"/><g class="ticks"><line x1="21.7" y1="78.3" x2="17.5" y2="82.5"/><line x1="12.0" y1="62.4" x2="6.3" y2="64.2"/><line x1="10.5" y1="43.7" x2="4.6" y2="42.8"/><line x1="17.6" y1="26.5" x2="12.8" y2="23.0"/><line x1="31.8" y1="14.4" x2="29.1" y2="9.0"/><line x1="50.0" y1="10.0" x2="50.0" y2="4.0"/><line x1="68.2" y1="14.4" x2="70.9" y2="9.0"/><line x1="82.4" y1="26.5" x2="87.2" y2="23.0"/><line x1="89.5" y1="43.7" x2="95.4" y2="42.8"/><line x1="88.0" y1="62.4" x2="93.7" y2="64.2"/><line x1="78.3" y1="78.3" x2="82.5" y2="82.5"/></g><g class="needle" style="--a:-0.7deg"><line x1="50" y1="56" x2="50" y2="14"/></g><circle class="hub" cx="50" cy="50" r="3.5"/></svg><span class="gv neg">-0.1%</span><span class="label">Desde 2026-10-26</span></div></div>
+  <div class="hero-gauge"><div class="gauge"><svg viewBox="0 0 100 100" role="img" aria-label="Tacómetro de rentabilidad"><path class="arc" d="M18.9 81.1 A44 44 0 1 1 81.1 81.1"/><g class="ticks"><line x1="21.7" y1="78.3" x2="17.5" y2="82.5"/><line x1="12.0" y1="62.4" x2="6.3" y2="64.2"/><line x1="10.5" y1="43.7" x2="4.6" y2="42.8"/><line x1="17.6" y1="26.5" x2="12.8" y2="23.0"/><line x1="31.8" y1="14.4" x2="29.1" y2="9.0"/><line x1="50.0" y1="10.0" x2="50.0" y2="4.0"/><line x1="68.2" y1="14.4" x2="70.9" y2="9.0"/><line x1="82.4" y1="26.5" x2="87.2" y2="23.0"/><line x1="89.5" y1="43.7" x2="95.4" y2="42.8"/><line x1="88.0" y1="62.4" x2="93.7" y2="64.2"/><line x1="78.3" y1="78.3" x2="82.5" y2="82.5"/></g><g class="needle" style="--a:-0.7deg"><line x1="50" y1="56" x2="50" y2="14"/></g><circle class="hub" cx="50" cy="50" r="3.5"/></svg><span class="gv neg">-0.1%</span><span class="label">Desde 2026-10-26</span></div></div>
 </section>
 <div class="label sec-title">Acceso</div>
 <div class="nav-cards"><button class="nc" data-go="resumen" data-reveal>
@@ -306,7 +307,7 @@ footer{margin-top:28px;color:var(--mut);font-size:12.5px;text-align:center}
 <section class="view" id="resumen">
   <article class="card glow feat stg" role="button" tabindex="0" onclick="document.getElementById('d-AMZN').showModal()" onkeydown="if(event.key==='Enter')this.click()"><div class="logo lg"><span>AMZN</span><img src="https://www.google.com/s2/favicons?domain=amazon.com&amp;sz=128" alt="" loading="lazy" onerror="this.remove()"></div><div class="pb"><span class="label">Destacado de hoy · 2/3 señales</span><h2 style="font-size:20px;margin:6px 0 2px">Amazon.com, Inc. <span class="tk">AMZN</span></h2><div class="sec"><span class="sec-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span>Consumo discrecional · Internet Retail</div><p>Amazon.com, Inc. engages in the retail sale of consumer products, advertising, and subscriptions service through online and physical stores in North America and internationally. The company operates through three segments: North America, International, and Amazon Web Services (AWS). It also manufact</p></div><span class="go"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></article>
   <div class="card glow hero-card" data-reveal>
-    <div class="gauge"><svg viewBox="0 0 100 100" aria-hidden="true"><path class="arc" d="M18.9 81.1 A44 44 0 1 1 81.1 81.1"/><g class="ticks"><line x1="21.7" y1="78.3" x2="17.5" y2="82.5"/><line x1="12.0" y1="62.4" x2="6.3" y2="64.2"/><line x1="10.5" y1="43.7" x2="4.6" y2="42.8"/><line x1="17.6" y1="26.5" x2="12.8" y2="23.0"/><line x1="31.8" y1="14.4" x2="29.1" y2="9.0"/><line x1="50.0" y1="10.0" x2="50.0" y2="4.0"/><line x1="68.2" y1="14.4" x2="70.9" y2="9.0"/><line x1="82.4" y1="26.5" x2="87.2" y2="23.0"/><line x1="89.5" y1="43.7" x2="95.4" y2="42.8"/><line x1="88.0" y1="62.4" x2="93.7" y2="64.2"/><line x1="78.3" y1="78.3" x2="82.5" y2="82.5"/></g><g class="needle" style="--a:-0.7deg"><line x1="50" y1="56" x2="50" y2="14"/></g><circle class="hub" cx="50" cy="50" r="3.5"/></svg><span class="gv neg">-0.1%</span><span class="label">Simulación desde 2026-10-26</span></div>
+    <div class="gauge"><svg viewBox="0 0 100 100" role="img" aria-label="Tacómetro de rentabilidad"><path class="arc" d="M18.9 81.1 A44 44 0 1 1 81.1 81.1"/><g class="ticks"><line x1="21.7" y1="78.3" x2="17.5" y2="82.5"/><line x1="12.0" y1="62.4" x2="6.3" y2="64.2"/><line x1="10.5" y1="43.7" x2="4.6" y2="42.8"/><line x1="17.6" y1="26.5" x2="12.8" y2="23.0"/><line x1="31.8" y1="14.4" x2="29.1" y2="9.0"/><line x1="50.0" y1="10.0" x2="50.0" y2="4.0"/><line x1="68.2" y1="14.4" x2="70.9" y2="9.0"/><line x1="82.4" y1="26.5" x2="87.2" y2="23.0"/><line x1="89.5" y1="43.7" x2="95.4" y2="42.8"/><line x1="88.0" y1="62.4" x2="93.7" y2="64.2"/><line x1="78.3" y1="78.3" x2="82.5" y2="82.5"/></g><g class="needle" style="--a:-0.7deg"><line x1="50" y1="56" x2="50" y2="14"/></g><circle class="hub" cx="50" cy="50" r="3.5"/></svg><span class="gv neg">-0.1%</span><span class="label">Simulación desde 2026-10-26</span></div>
     <div class="txt"><span class="label">Rentabilidad de la simulación</span>
       <h2 style="font-size:22px;margin:6px 0 0">-0.1% frente a +0.5% de VWCE</h2>
       <p>60 % VT, 25 % acciones con tendencia y 15 % bitcoin. Comparado con el ETF global VWCE desde el mismo día.</p></div>
@@ -381,6 +382,8 @@ function ago(){
     if(!el.dataset.ts) return;
     const m=Math.round((Date.now()-Date.parse(el.dataset.ts))/60000);
     el.textContent=m<60?'hace '+m+' min':'hace '+Math.round(m/60)+' h';
+    const p=el.closest('.pill');
+    if(el.classList.contains('ago')&&m>120&&p){p.className='pill off';const l=p.querySelector('.lead');if(l)l.textContent='Sin actualizar';}
   });
 }
 function fx(el,txt,up){
@@ -404,7 +407,7 @@ async function precios(){
     const tp=$('#tape');
     if(tp){const items=Object.entries(j.p).map(([t,d])=>'<span class="it"><b>'+t+'</b>'+d.p.toFixed(2)+'<em class="'+(d.v>=0?'pos':'neg')+'">'+(d.v>=0?'▲ +':'▼ ')+d.v.toFixed(2)+'%</em></span>').join('');tp.innerHTML=items+items;}
     if($('#pxts')){$('#pxts').dataset.ts=j.ts;ago();}
-  }catch(e){ /* sin precios: la página sigue mostrando el informe */ }
+  }catch(e){ const tp=$('#tape'); if(tp) tp.innerHTML='<span class="it">Precios no disponibles ahora</span>'; if($('#pxts')) $('#pxts').textContent='no disponibles'; }
 }
 document.addEventListener('pointermove',e=>{
   const g=e.target.closest&&e.target.closest('.glow'); if(!g) return;
@@ -422,7 +425,7 @@ if('IntersectionObserver' in window&&!reduce){
   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.12});
   $$('[data-reveal]').forEach(el=>io.observe(el));
 } else $$('[data-reveal]').forEach(el=>el.classList.add('in'));
-countUp(); ago(); precios();
+countUp(); ago(); precios(); setInterval(ago,60000);
 setInterval(precios,60000); setInterval(ago,60000);
 </script>
 </body></html>

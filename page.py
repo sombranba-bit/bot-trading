@@ -104,6 +104,7 @@ color:var(--mut);font-size:15px;font-weight:600;text-align:left;cursor:pointer;t
 .top h1{margin:0;font-size:24px;font-weight:600;letter-spacing:-.02em}
 .top p{margin:2px 0 0;color:var(--mut);font-size:14px}
 .pills{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+:where(button,a):focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;border:1px solid var(--rule);background:var(--card);font-size:13px}
 .pill.ok{border-color:color-mix(in srgb,var(--ok) 50%,transparent);color:var(--ok)}
 .pill.off{border-color:color-mix(in srgb,var(--warn) 50%,transparent);color:var(--warn)}
@@ -319,6 +320,8 @@ function ago(){
     if(!el.dataset.ts) return;
     const m=Math.round((Date.now()-Date.parse(el.dataset.ts))/60000);
     el.textContent=m<60?'hace '+m+' min':'hace '+Math.round(m/60)+' h';
+    const p=el.closest('.pill');
+    if(el.classList.contains('ago')&&m>120&&p){p.className='pill off';const l=p.querySelector('.lead');if(l)l.textContent='Sin actualizar';}
   });
 }
 function fx(el,txt,up){
@@ -342,7 +345,7 @@ async function precios(){
     const tp=$('#tape');
     if(tp){const items=Object.entries(j.p).map(([t,d])=>'<span class="it"><b>'+t+'</b>'+d.p.toFixed(2)+'<em class="'+(d.v>=0?'pos':'neg')+'">'+(d.v>=0?'▲ +':'▼ ')+d.v.toFixed(2)+'%</em></span>').join('');tp.innerHTML=items+items;}
     if($('#pxts')){$('#pxts').dataset.ts=j.ts;ago();}
-  }catch(e){ /* sin precios: la página sigue mostrando el informe */ }
+  }catch(e){ const tp=$('#tape'); if(tp) tp.innerHTML='<span class="it">Precios no disponibles ahora</span>'; if($('#pxts')) $('#pxts').textContent='no disponibles'; }
 }
 document.addEventListener('pointermove',e=>{
   const g=e.target.closest&&e.target.closest('.glow'); if(!g) return;
@@ -360,7 +363,7 @@ if('IntersectionObserver' in window&&!reduce){
   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.12});
   $$('[data-reveal]').forEach(el=>io.observe(el));
 } else $$('[data-reveal]').forEach(el=>el.classList.add('in'));
-countUp(); ago(); precios();
+countUp(); ago(); precios(); setInterval(ago,60000);
 setInterval(precios,60000); setInterval(ago,60000);
 """
 
@@ -390,7 +393,7 @@ def gauge(v, label):
         f'<line x1="{50 + 40 * math.sin(math.radians(k)):.1f}" y1="{50 - 40 * math.cos(math.radians(k)):.1f}" '
         f'x2="{50 + 46 * math.sin(math.radians(k)):.1f}" y2="{50 - 46 * math.cos(math.radians(k)):.1f}"/>'
         for k in range(-135, 136, 27))
-    return (f'<div class="gauge"><svg viewBox="0 0 100 100" aria-hidden="true">'
+    return (f'<div class="gauge"><svg viewBox="0 0 100 100" role="img" aria-label="Tacómetro de rentabilidad">'
             f'<path class="arc" d="M18.9 81.1 A44 44 0 1 1 81.1 81.1"/><g class="ticks">{ticks}</g>'
             f'<g class="needle" style="--a:{a:.1f}deg"><line x1="50" y1="56" x2="50" y2="14"/></g>'
             f'<circle class="hub" cx="50" cy="50" r="3.5"/></svg>'
@@ -499,7 +502,7 @@ def status_pill(st):
     if st.get("parado"):
         return '<span class="pill off"><i></i>Bot parado (KILL_SWITCH)</span>'
     mercado = "Bolsa EE. UU. abierta" if st["mercado_abierto"] else "Bolsa EE. UU. cerrada (solo cripto)"
-    return (f'<span class="pill ok"><i></i>Bot activo · <b class="ago" data-ts="{st["ts"]}">{st["ts"]}</b></span>'
+    return (f'<span class="pill ok"><i></i><span class="lead">Bot activo</span> · <b class="ago" data-ts="{st["ts"]}">{st["ts"]}</b></span>'
             f'<span class="pill">{mercado}</span>')
 
 
