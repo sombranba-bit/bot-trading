@@ -1,9 +1,9 @@
 {
  "AAPL": {
-  "pe": 38.146996,
-  "price": 342.56,
+  "pe": 38.15082,
+  "price": 349.08,
   "target": 345.6313,
-  "upside": 0.008965728631480596,
+  "upside": -0.00987939727283138,
   "undervalued": false,
   "name": "Apple Inc.",
   "sector": "Technology",
@@ -12,10 +12,10 @@
   "web": "https://www.apple.com"
  },
  "MSFT": {
-  "pe": 25.2881,
-  "price": 484.52,
-  "target": 636.12427,
-  "upside": 0.31289579377528276,
+  "pe": 25.704594,
+  "price": 492.5,
+  "target": 637.3617,
+  "upside": 0.2941354314720812,
   "undervalued": false,
   "name": "Microsoft Corporation",
   "sector": "Technology",
@@ -24,10 +24,10 @@
   "web": "https://www.microsoft.com"
  },
  "GOOGL": {
-  "pe": 13.853265,
-  "price": 265.29,
-  "target": 397.1283,
-  "upside": 0.4969591767499717,
+  "pe": 14.731071,
+  "price": 282.1,
+  "target": 395.7702,
+  "upside": 0.4029429280397021,
   "undervalued": true,
   "name": "Alphabet Inc.",
   "sector": "Communication Services",
@@ -36,11 +36,11 @@
   "web": "https://abc.xyz"
  },
  "AMZN": {
-  "pe": 19.953114,
-  "price": 246.82,
-  "target": 326.507,
-  "upside": 0.3228547119358238,
-  "undervalued": true,
+  "pe": 20.645918,
+  "price": 255.39,
+  "target": 326.34033,
+  "upside": 0.27781169975331843,
+  "undervalued": false,
   "name": "Amazon.com, Inc.",
   "sector": "Consumer Cyclical",
   "industry": "Internet Retail",
@@ -48,10 +48,10 @@
   "web": "https://www.amazon.com"
  },
  "NVDA": {
-  "pe": 13.483351,
-  "price": 125.53,
-  "target": 244.18286,
-  "upside": 0.9452151676889986,
+  "pe": 13.484478,
+  "price": 165.05,
+  "target": 244.54807,
+  "upside": 0.4816605271129959,
   "undervalued": true,
   "name": "NVIDIA Corporation",
   "sector": "Technology",
@@ -60,11 +60,11 @@
   "web": "https://www.nvidia.com"
  },
  "META": {
-  "pe": 19.134768,
-  "price": 560.84,
-  "target": 848.2262,
-  "upside": 0.5124210113401324,
-  "undervalued": true,
+  "pe": 20.388945,
+  "price": 597.6,
+  "target": 845.3814,
+  "upside": 0.41462751004016063,
+  "undervalued": false,
   "name": "Meta Platforms, Inc.",
   "sector": "Communication Services",
   "industry": "Internet Content & Information",
@@ -72,10 +72,10 @@
   "web": "https://www.meta.com"
  },
  "JPM": {
-  "pe": 13.025587,
-  "price": 310.53,
+  "pe": 13.025916,
+  "price": 316.66,
   "target": 373.47827,
-  "upside": 0.20271236273467963,
+  "upside": 0.17942989326091063,
   "undervalued": true,
   "name": "JPMorgan Chase & Co.",
   "sector": "Financial Services",
@@ -84,10 +84,10 @@
   "web": "https://www.jpmorganchase.com"
  },
  "JNJ": {
-  "pe": 41.04249,
-  "price": 270.47,
+  "pe": 41.04103,
+  "price": 270.05,
   "target": 279.84726,
-  "upside": 0.03467024069212843,
+  "upside": 0.03627942973523424,
   "undervalued": false,
   "name": "Johnson & Johnson",
   "sector": "Healthcare",
@@ -96,10 +96,10 @@
   "web": "https://www.jnj.com"
  },
  "PG": {
-  "pe": 25.50753,
-  "price": 169.37,
-  "target": 175.8261,
-  "upside": 0.03811832083603939,
+  "pe": 25.50376,
+  "price": 169.6,
+  "target": 176.34782,
+  "upside": 0.03978667452830198,
   "undervalued": false,
   "name": "The Procter & Gamble Company",
   "sector": "Consumer Defensive",
@@ -108,10 +108,10 @@
   "web": "https://www.pginvestor.com"
  },
  "XOM": {
-  "pe": 16.459877,
-  "price": 159.99,
+  "pe": 16.141973,
+  "price": 156.9,
   "target": 184.18182,
-  "upside": 0.1512083255203449,
+  "upside": 0.17388030592734216,
   "undervalued": true,
   "name": "ExxonMobil Holdings Corporation",
   "sector": "Energy",
@@ -120,10 +120,10 @@
   "web": "https://corporate.exxonmobil.com"
  },
  "KO": {
-  "pe": 28.610619,
-  "price": 96.99,
+  "pe": 28.283184,
+  "price": 95.88,
   "target": 99.64,
-  "upside": 0.02732240437158473,
+  "upside": 0.03921568627450989,
   "undervalued": false,
   "name": "The Coca-Cola Company",
   "sector": "Consumer Defensive",
@@ -132,10 +132,10 @@
   "web": "https://www.coca-colacompany.com"
  },
  "PEP": {
-  "pe": 17.677986,
-  "price": 140.54,
+  "pe": 17.68096,
+  "price": 140.21,
   "target": 141.13635,
-  "upside": 0.004243275935676749,
+  "upside": 0.006606875401183876,
   "undervalued": false,
   "name": "PepsiCo, Inc.",
   "sector": "Consumer Defensive",
@@ -144,10 +144,10 @@
   "web": "https://www.pepsico.com"
  },
  "WMT": {
-  "pe": 46.358696,
-  "price": 127.95,
-  "target": 135.7561,
-  "upside": 0.06100898788589304,
+  "pe": 46.949276,
+  "price": 129.58,
+  "target": 136.14635,
+  "upside": 0.050674100941503264,
   "undervalued": false,
   "name": "Walmart Inc.",
   "sector": "Consumer Defensive",
@@ -156,10 +156,10 @@
   "web": "https://www.stock.walmart.com"
  },
  "HD": {
-  "pe": 23.544445,
-  "price": 339.04,
-  "target": 375.59375,
-  "upside": 0.10781544950448319,
+  "pe": 24.031944,
+  "price": 346.06,
+  "target": 374.8125,
+  "upside": 0.08308530312662543,
   "undervalued": false,
   "name": "The Home Depot, Inc.",
   "sector": "Consumer Cyclical",
@@ -168,10 +168,10 @@
   "web": "https://www.homedepot.com"
  },
  "V": {
-  "pe": 32.61932,
-  "price": 401.87,
+  "pe": 33.23052,
+  "price": 409.4,
   "target": 450.9562,
-  "upside": 0.12214447458133226,
+  "upside": 0.10150512945774315,
   "undervalued": false,
   "name": "Visa Inc.",
   "sector": "Financial Services",
@@ -180,10 +180,10 @@
   "web": "https://corporate.visa.com"
  },
  "MA": {
-  "pe": 32.736263,
-  "price": 625.59,
+  "pe": 33.25379,
+  "price": 635.48,
   "target": 720.68677,
-  "upside": 0.15201133330136352,
+  "upside": 0.1340825360357525,
   "undervalued": false,
   "name": "Mastercard Incorporated",
   "sector": "Financial Services",
@@ -192,10 +192,10 @@
   "web": "https://www.mastercard.com"
  },
  "UNH": {
-  "pe": 19.397831,
-  "price": 339.85,
+  "pe": 19.39296,
+  "price": 336.08,
   "target": 478.48,
-  "upside": 0.40791525673091056,
+  "upside": 0.42370864079980963,
   "undervalued": true,
   "name": "UnitedHealth Group Incorporated",
   "sector": "Healthcare",
@@ -216,10 +216,10 @@
   "web": "https://www.pfizer.com"
  },
  "MRK": {
-  "pe": 135.07071,
-  "price": 133.72,
+  "pe": 136.83838,
+  "price": 135.47,
   "target": 161.525,
-  "upside": 0.20793448997906072,
+  "upside": 0.19233040525577616,
   "undervalued": false,
   "name": "Merck & Co., Inc.",
   "sector": "Healthcare",
@@ -228,10 +228,10 @@
   "web": "https://www.merck.com"
  },
  "CSCO": {
-  "pe": 24.106382,
-  "price": 90.64,
+  "pe": 25.744682,
+  "price": 96.8,
   "target": 130.5,
-  "upside": 0.4397616946160636,
+  "upside": 0.34814049586776874,
   "undervalued": false,
   "name": "Cisco Systems, Inc.",
   "sector": "Technology",
@@ -241,9 +241,9 @@
  },
  "INTC": {
   "pe": null,
-  "price": 51.28,
+  "price": 59.66,
   "target": 90.65116,
-  "upside": 0.7677683307332295,
+  "upside": 0.5194629567549449,
   "undervalued": false,
   "name": "Intel Corporation",
   "sector": "Technology",
@@ -252,11 +252,11 @@
   "web": "https://www.intel.com"
  },
  "IBM": {
-  "pe": 19.150171,
-  "price": 224.44,
+  "pe": 19.14544,
+  "price": 233.0,
   "target": 259.84738,
-  "upside": 0.15775877740153255,
-  "undervalued": true,
+  "upside": 0.1152248068669528,
+  "undervalued": false,
   "name": "International Business Machines Corporation",
   "sector": "Technology",
   "industry": "Information Technology Services",
@@ -264,10 +264,10 @@
   "web": "https://www.ibm.com"
  },
  "ORCL": {
-  "pe": 15.860501,
-  "price": 101.19,
+  "pe": 15.854951,
+  "price": 113.68,
   "target": 236.184,
-  "upside": 1.3340646308923807,
+  "upside": 1.07762139338494,
   "undervalued": true,
   "name": "Oracle Corporation",
   "sector": "Technology",
@@ -276,10 +276,10 @@
   "web": "https://www.oracle.com"
  },
  "DIS": {
-  "pe": 20.955595,
-  "price": 117.98,
+  "pe": 20.952963,
+  "price": 120.27,
   "target": 131.34355,
-  "upside": 0.11326962196982526,
+  "upside": 0.09207242038746144,
   "undervalued": false,
   "name": "The Walt Disney Company",
   "sector": "Communication Services",
@@ -288,10 +288,10 @@
   "web": "https://thewaltdisneycompany.com"
  },
  "NKE": {
-  "pe": 15.826922,
-  "price": 32.92,
-  "target": 36.56579,
-  "upside": 0.11074696233292824,
+  "pe": 16.230768,
+  "price": 33.76,
+  "target": 36.5,
+  "upside": 0.08116113744075837,
   "undervalued": false,
   "name": "NIKE, Inc.",
   "sector": "Consumer Cyclical",
@@ -300,10 +300,10 @@
   "web": "https://www.nike.com"
  },
  "MCD": {
-  "pe": 21.617086,
-  "price": 273.24,
+  "pe": 21.60907,
+  "price": 276.38,
   "target": 299.0,
-  "upside": 0.09427609427609429,
+  "upside": 0.08184383819379115,
   "undervalued": false,
   "name": "McDonald's Corporation",
   "sector": "Consumer Cyclical",
@@ -312,10 +312,10 @@
   "web": "https://www.mcdonalds.com"
  },
  "BA": {
-  "pe": 16.08772,
-  "price": 155.89,
-  "target": 233.34615,
-  "upside": 0.496864134966964,
+  "pe": 16.094152,
+  "price": 162.39,
+  "target": 233.03703,
+  "upside": 0.4350454461481619,
   "undervalued": true,
   "name": "The Boeing Company",
   "sector": "Industrials",
@@ -324,10 +324,10 @@
   "web": "https://www.boeing.com"
  },
  "CAT": {
-  "pe": 20.03336,
-  "price": 510.45,
+  "pe": 20.030758,
+  "price": 547.04,
   "target": 807.2604,
-  "upside": 0.5814681163679107,
+  "upside": 0.4756880666861656,
   "undervalued": false,
   "name": "Caterpillar Inc.",
   "sector": "Industrials",
@@ -336,10 +336,10 @@
   "web": "https://www.caterpillar.com"
  },
  "GE": {
-  "pe": 35.385143,
-  "price": 309.62,
+  "pe": 35.381058,
+  "price": 321.26,
   "target": 378.42856,
-  "upside": 0.22223551450164725,
+  "upside": 0.1779510676710454,
   "undervalued": false,
   "name": "GE Aerospace",
   "sector": "Industrials",
@@ -348,10 +348,10 @@
   "web": "https://www.geaerospace.com"
  },
  "T": {
-  "pe": 11.930481,
-  "price": 22.31,
+  "pe": 11.925134,
+  "price": 22.3,
   "target": 27.58696,
-  "upside": 0.23652891080233096,
+  "upside": 0.237083408071749,
   "undervalued": true,
   "name": "AT&T Inc.",
   "sector": "Communication Services",
@@ -360,10 +360,10 @@
   "web": "https://www.att.com"
  },
  "VZ": {
-  "pe": 11.857142,
-  "price": 46.48,
+  "pe": 11.84949,
+  "price": 46.45,
   "target": 50.65,
-  "upside": 0.08971600688468162,
+  "upside": 0.09041980624327217,
   "undervalued": false,
   "name": "Verizon Communications Inc.",
   "sector": "Communication Services",
@@ -372,10 +372,10 @@
   "web": "https://www.verizon.com"
  },
  "CVX": {
-  "pe": 15.298825,
-  "price": 208.37,
-  "target": 242.54167,
-  "upside": 0.16399515285309785,
+  "pe": 15.137298,
+  "price": 206.17,
+  "target": 241.625,
+  "upside": 0.17196973371489555,
   "undervalued": true,
   "name": "Chevron Corporation",
   "sector": "Energy",
@@ -384,10 +384,10 @@
   "web": "https://www.chevron.com"
  },
  "BAC": {
-  "pe": 11.22673,
-  "price": 47.04,
+  "pe": 11.221445,
+  "price": 48.14,
   "target": 62.47727,
-  "upside": 0.32817325680272114,
+  "upside": 0.29782447029497283,
   "undervalued": true,
   "name": "Bank of America Corporation",
   "sector": "Financial Services",
@@ -396,10 +396,10 @@
   "web": "https://www.bankofamerica.com"
  },
  "WFC": {
-  "pe": 11.088858,
-  "price": 78.62,
+  "pe": 11.283498,
+  "price": 80.0,
   "target": 97.375,
-  "upside": 0.23855253116255404,
+  "upside": 0.2171875000000001,
   "undervalued": true,
   "name": "Wells Fargo & Company",
   "sector": "Financial Services",
@@ -408,10 +408,10 @@
   "web": "https://www.wellsfargo.com"
  },
  "C": {
-  "pe": 10.781676,
-  "price": 110.62,
+  "pe": 10.777569,
+  "price": 114.35,
   "target": 150.59525,
-  "upside": 0.361374525402278,
+  "upside": 0.3169676432006996,
   "undervalued": true,
   "name": "Citigroup Inc.",
   "sector": "Financial Services",
@@ -420,10 +420,10 @@
   "web": "https://www.citigroup.com"
  },
  "MMM": {
-  "pe": 26.565674,
-  "price": 177.99,
+  "pe": 26.576368,
+  "price": 184.44,
   "target": 194.01411,
-  "upside": 0.09002814764874412,
+  "upside": 0.05190907612231621,
   "undervalued": false,
   "name": "3M Company",
   "sector": "Industrials",
@@ -432,11 +432,11 @@
   "web": "https://www.3m.com"
  },
  "HON": {
-  "pe": 10.54239,
-  "price": 212.64,
+  "pe": 10.544893,
+  "price": 221.97,
   "target": 253.86957,
-  "upside": 0.19389376410835224,
-  "undervalued": true,
+  "upside": 0.14371117718610638,
+  "undervalued": false,
   "name": "Honeywell International Inc.",
   "sector": "Industrials",
   "industry": "Conglomerates",
@@ -444,10 +444,10 @@
   "web": "https://www.honeywell.com"
  },
  "LLY": {
-  "pe": 43.72314,
-  "price": 1347.11,
+  "pe": 43.723167,
+  "price": 1364.6,
   "target": 1470.0565,
-  "upside": 0.09126686016732122,
+  "upside": 0.07728015535688115,
   "undervalued": false,
   "name": "Eli Lilly and Company",
   "sector": "Healthcare",
@@ -456,10 +456,10 @@
   "web": "https://www.lilly.com"
  },
  "ABBV": {
-  "pe": 49.17526,
-  "price": 286.2,
+  "pe": 49.561855,
+  "price": 288.45,
   "target": 315.8846,
-  "upside": 0.10371977638015362,
+  "upside": 0.09511041775004325,
   "undervalued": false,
   "name": "AbbVie Inc.",
   "sector": "Healthcare",
@@ -468,10 +468,10 @@
   "web": "https://www.abbvie.com"
  },
  "AMGN": {
-  "pe": 25.254494,
-  "price": 435.64,
-  "target": 437.01276,
-  "upside": 0.0031511339638234936,
+  "pe": 25.255342,
+  "price": 449.04,
+  "target": 440.779,
+  "upside": -0.018397024763940895,
   "undervalued": false,
   "name": "Amgen Inc.",
   "sector": "Healthcare",
@@ -480,8 +480,8 @@
   "web": "https://www.amgen.com"
  },
  "SPY": {
-  "pe": 21.945845,
-  "price": 689.81,
+  "pe": 22.979174,
+  "price": 722.29,
   "target": null,
   "upside": null,
   "undervalued": false,
@@ -492,8 +492,8 @@
   "web": ""
  },
  "QQQ": {
-  "pe": 25.062166,
-  "price": 608.45,
+  "pe": 26.816046,
+  "price": 651.03,
   "target": null,
   "upside": null,
   "undervalued": false,
