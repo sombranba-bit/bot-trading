@@ -8,6 +8,9 @@ UNIVERSE = [
     "BAC", "WFC", "C", "MMM", "HON", "LLY", "ABBV", "AMGN", "SPY", "QQQ",
 ]
 
+# Precios del bot: "yahoo" (por defecto) o "alpaca" (API oficial). Cambiar solo tras medirlo en backtest.
+DATA_SOURCE = "yahoo"
+
 # Cripto: símbolo de Yahoo para datos y símbolo de Alpaca para órdenes
 CRYPTO = ["BTC-USD"]
 CRYPTO_ALPACA = {"BTC-USD": "BTC/USD"}

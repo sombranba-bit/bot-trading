@@ -8,10 +8,12 @@ import os
 import yfinance as yf
 
 from config import PE_MAX, UNIVERSE, UPSIDE_MIN
+from notify import telegram
 
 
 def run() -> dict:
     out = {}
+    fallos = 0
     prev = json.load(open("data/screen.json")) if os.path.exists("data/screen.json") else {}
     for t in UNIVERSE:
         try:
@@ -21,8 +23,10 @@ def run() -> dict:
             info = {}
         if "longName" not in info and t in prev:  # Yahoo falló: conservar la última copia buena
             out[t] = prev[t]
+            fallos += 1
             continue
         if not info:
+            fallos += 1
             continue
         pe = info.get("trailingPE")
         price = info.get("currentPrice") or info.get("regularMarketPrice")
@@ -38,6 +42,11 @@ def run() -> dict:
     with open("data/screen.json", "w") as f:
         json.dump(out, f, indent=1)
     print(f"Screening: {sum(v['undervalued'] for v in out.values())} infravaloradas de {len(out)}")
+    if fallos > len(UNIVERSE) // 2:  # Yahoo caído: sin aviso, el informe parecería normal sin señales
+        try:
+            telegram(f"⚠️ Screening: Yahoo no devolvió datos para {fallos} de {len(UNIVERSE)} acciones.")
+        except Exception as e:
+            print("no se pudo avisar:", e)
     return out
 
 
