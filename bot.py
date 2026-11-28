@@ -9,21 +9,46 @@ Parar: crear un fichero KILL_SWITCH en el repo.
 import csv
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import yfinance as yf
+from alpaca.data.historical import CryptoHistoricalDataClient, StockHistoricalDataClient
+from alpaca.data.requests import CryptoBarsRequest, StockBarsRequest
+from alpaca.data.timeframe import TimeFrame
 from alpaca.trading.client import TradingClient
 from alpaca.trading.enums import OrderSide, TimeInForce
 from alpaca.trading.requests import MarketOrderRequest
 
-from config import ASSETS, CORE, CRYPTO, CRYPTO_ALPACA, MAX_INVESTED, MAX_POSITIONS, STOCK_BUDGET, UNIVERSE
+from config import ASSETS, CORE, CRYPTO, CRYPTO_ALPACA, DATA_SOURCE, MAX_INVESTED, MAX_POSITIONS, STOCK_BUDGET, UNIVERSE
 from forecast import record_changes
 from notify import telegram
 from strategy import signal
 
 
 def closes(ticker):
+    if DATA_SOURCE == "alpaca":
+        return closes_alpaca(ticker)
     return yf.download(ticker, period="2y", progress=False, auto_adjust=True)["Close"].squeeze()
+
+
+def closes_alpaca(ticker):
+    """Cierres diarios desde la API de datos de Alpaca (oficial)."""
+    start = datetime.now(timezone.utc) - timedelta(days=760)
+    if ticker in CRYPTO_ALPACA:
+        req = CryptoBarsRequest(symbol_or_symbols=CRYPTO_ALPACA[ticker], timeframe=TimeFrame.Day, start=start)
+        df = CryptoHistoricalDataClient().get_crypto_bars(req).df
+    else:
+        client = StockHistoricalDataClient(os.environ["ALPACA_API_KEY"], os.environ["ALPACA_API_SECRET"])
+        req = StockBarsRequest(symbol_or_symbols=ticker, timeframe=TimeFrame.Day, start=start, feed="iex")
+        df = client.get_stock_bars(req).df
+    return bars_to_series(df)
+
+
+def bars_to_series(df):
+    """Convierte las barras de Alpaca (índice símbolo + fecha) en una serie de cierres por fecha."""
+    s = df.droplevel("symbol")["close"]
+    s.index = s.index.tz_convert(None).normalize()
+    return s.sort_index()
 
 
 def log_trade(symbol, action):
